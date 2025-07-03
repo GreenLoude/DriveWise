@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -104,6 +65,7 @@
             font-size: 1.8rem;
             font-weight: 700;
             color: var(--primary);
+            text-decoration: none;
         }
 
         .logo i {
@@ -209,6 +171,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            text-decoration: none;
         }
 
         .btn-light {
@@ -401,7 +364,7 @@
 
         .school-actions {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
         }
 
@@ -584,7 +547,7 @@
         }
     </style>
 </head>
-<body>
+<body id="home">
     <!-- Header -->
     <header>
         <div class="header-content">
@@ -594,12 +557,11 @@
             </div>
             
             <nav>
-                    <ul> <li><a href="index (1).html">Home</a></li>
+                <ul>
+                    <li><a href="#home">Home</a></li>
                     <li><a href="#features">Features</a></li>
                     <li><a href="#how-it-works">How It Works</a></li>
-                    <li><a href="#schools">Driving Schools</a></li>
                     <li><a href="#testimonials">Testimonials</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
                 </ul>
             </nav>
             
@@ -617,8 +579,8 @@
                 <h1>Learn to Drive with Confidence</h1>
                 <p>Find the best driving instructors and courses near you. Get certified quickly and affordably with DriveWise.</p>
                 <div class="hero-buttons">
-                    <button class="hero-btn btn-light">Find a Driving School</button>
-                    <button class="hero-btn btn-transparent">View Pricing</button>
+                    <a href="login.html" class="hero-btn btn-light">Find a Driving School</a>
+                    <a href="#schools" class="hero-btn btn-transparent">Driving School</a>
                 </div>
             </div>
         </div>
@@ -733,8 +695,7 @@
                         </div>
                         <div class="school-price">¥2,500/session</div>
                         <div class="school-actions">
-                            <button class="btn btn-primary">Book Now</button>
-                            <a href="#" class="link">Details</a>
+                            <a href="login.html" class="btn btn-primary">Book Now</a>
                         </div>
                     </div>
                 </div>
@@ -759,8 +720,7 @@
                         </div>
                         <div class="school-price">¥2,800/session</div>
                         <div class="school-actions">
-                            <button class="btn btn-primary">Book Now</button>
-                            <a href="#" class="link">Details</a>
+                            <a href="login.html" class="btn btn-primary">Book Now</a>
                         </div>
                     </div>
                 </div>
@@ -785,8 +745,7 @@
                         </div>
                         <div class="school-price">¥3,200/session</div>
                         <div class="school-actions">
-                            <button class="btn btn-primary">Book Now</button>
-                            <a href="#" class="link">Details</a>
+                            <a href="login.html" class="btn btn-primary">Book Now</a>
                         </div>
                     </div>
                 </div>
@@ -859,7 +818,7 @@
                 <p>Join thousands of successful drivers who learned with DriveWise</p>
                 <div class="hero-buttons">
                     <a href="signup.html" class="hero-btn btn-primary">Sign Up Now</a>
-                    <button class="hero-btn btn-outline">Find a School</button>
+                    <a href="login.html" class="hero-btn btn-outline">Find a School</a>
                 </div>
             </div>
         </div>
