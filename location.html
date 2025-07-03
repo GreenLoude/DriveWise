@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveSmart - Find Driving Schools Near You</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light-gray: #e2e8f0;
+            --border: #cbd5e1;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav li {
+            margin-left: 25px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        nav a i {
+            margin-right: 5px;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: white;
+            color: var(--primary);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(37, 99, 235, 0.9), rgba(37, 99, 235, 0.8)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 80px 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+
+        .search-bar {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 18px 20px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-bar button {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 13px 25px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .toggle-btn {
+            padding: 10px 25px;
+            background-color: white;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .toggle-btn:first-child {
+            border-radius: 30px 0 0 30px;
+            border-right: none;
+        }
+
+        .toggle-btn:last-child {
+            border-radius: 0 30px 30px 0;
+            border-left: none;
+        }
+
+        .toggle-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .school-card {
+            background-color: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .school-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .card-header h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .stars {
+            color: #f59e0b;
+            margin-right: 10px;
+        }
+
+        .rating-value {
+            font-weight: 500;
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .distance, .price {
+            display: flex;
+            align-items: center;
+        }
+
+        .distance i, .price i {
+            margin-right: 5px;
+            color: var(--gray);
+        }
+
+        .availability {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .next-session {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .next-session span {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .view-details {
+            display: flex;
+            align-items: center;
+            color: var(--primary);
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .view-details i {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .view-details:hover i {
+            transform: translateX(5px);
+        }
+
+        .continue-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto 50px;
+            padding: 15px;
+            font-size: 1.1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .location-section {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .location-content {
+            display: flex;
+            gap: 30px;
+        }
+
+        .location-legend {
+            flex: 1;
+            padding: 20px;
+            background-color: var(--light);
+            border-radius: var(--radius);
+        }
+
+        .location-legend h3 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .legend-icon {
+            width: 30px;
+            height: 30px;
+            background-color: var(--light-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .location-form {
+            flex: 2;
+        }
+
+        .current-location {
+            background-color: var(--light);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+        }
+
+        .current-location h3 {
+            margin-bottom: 15px;
+        }
+
+        .address {
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .location-search {
+            margin-bottom: 20px;
+        }
+
+        .location-search input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .location-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-location {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-location i {
+            margin-right: 10px;
+        }
+
+        .btn-current {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-confirm {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .ride-options {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .ride-card {
+            flex: 1;
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .ride-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .ride-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .ride-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .ride-description {
+            margin-bottom: 20px;
+            color: var(--gray);
+        }
+
+        .ride-tag {
+            display: inline-block;
+            padding: 5px 15px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 5px;
+            width: 70%;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .eco-note {
+            padding: 15px;
+            background-color: #dcfce7;
+            border-radius: 8px;
+            color: #166534;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 50px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #334155;
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                margin-top: 15px;
+            }
+            
+            .location-content,
+            .ride-options {
+                flex-direction: column;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .schools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-car"></i>
+                <span>DriveSmart</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#"><i class="fas fa-search-location"></i> Find Schools</a></li>
+                    <li><a href="#"><i class="fas fa-book"></i> Courses</a></li>
+                    <li><a href="#"><i class="fas fa-phone-alt"></i> Contact</a></li>
+                </ul>
+            </nav>
+            <div class="user-actions">
+                <button class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <button class="btn btn-primary"><i class="fas fa-user-plus"></i> Sign Up</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Choose a Driving School Near You</h1>
+            <p>Find certified instructors in your area and start your driving journey today</p>
+            <div class="search-bar">
+                <input type="text" placeholder="Search by school name or location">
+                <button><i class="fas fa-search"></i> Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Schools Section -->
+        <div class="section-title">
+            <h2>Top Driving Schools Near You</h2>
+        </div>
+        
+        <div class="view-toggle">
+            <div class="toggle-btn active">List</div>
+            <div class="toggle-btn">Map</div>
+        </div>
+        
+        <div class="schools-grid">
+            <!-- School Card 1 -->
+            <div class="school-card">
+                <div class="card-header">
+                    <h3>Pro Drive Academy</h3>
+                    <div class="rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="rating-value">4.8</div>
+                    </div>
+                    <div class="card-details">
+                        <div class="distance">
+                            <i class="fas fa-location-dot"></i> 2.3 km
+                        </div>
+                        <div class="price">
+                            <i class="fas fa-tag"></i> ¥2,500/session
+                        </div>
+                    </div>
+                    <span class="availability">Available Today</span>
+                </div>
+                <div class="card-body">
+                    <div class="next-session">
+                        <span>Next: Today at 2 PM</span>
+                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- School Card 2 -->
+            <div class="school-card">
+                <div class="card-header">
+                    <h3>Master Drivers School</h3>
+                    <div class="rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <div class="rating-value">4.5</div>
+                    </div>
+                    <div class="card-details">
+                        <div class="distance">
+                            <i class="fas fa-location-dot"></i> 3.1 km
+                        </div>
+                        <div class="price">
+                            <i class="fas fa-tag"></i> ¥2,800/session
+                        </div>
+                    </div>
+                    <span class="availability">Available Tomorrow</span>
+                </div>
+                <div class="card-body">
+                    <div class="next-session">
+                        <span>Next: Tomorrow at 10 AM</span>
+                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- School Card 3 -->
+            <div class="school-card">
+                <div class="card-header">
+                    <h3>Elite Driving Institute</h3>
+                    <div class="rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="rating-value">4.7</div>
+                    </div>
+                    <div class="card-details">
+                        <div class="distance">
+                            <i class="fas fa-location-dot"></i> 4.2 km
+                        </div>
+                        <div class="price">
+                            <i class="fas fa-tag"></i> ¥3,200/session
+                        </div>
+                    </div>
+                    <span class="availability">Available Today</span>
+                </div>
+                <div class="card-body">
+                    <div class="next-session">
+                        <span>Next: Today at 4 PM</span>
+                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="continue-btn">Continue <i class="fas fa-arrow-right"></i></button>
+        
+        <!-- Location Section -->
+        <div class="section-title">
+            <h2>Set Your Location</h2>
+        </div>
+        
+        <div class="location-section">
+            <div class="location-content">
+                <div class="location-legend">
+                    <h3>Nearby Locations</h3>
+                    <div class="legend-item">
+                        <div class="legend-icon"><i class="fas fa-school"></i></div>
+                        <div>Open Estate Primary School</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon"><i class="fas fa-tree"></i></div>
+                        <div>Veroon Park</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon"><i class="fas fa-building"></i></div>
+                        <div>Elite Residences</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon"><i class="fas fa-university"></i></div>
+                        <div>Global India International School</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div>Luna Square</div>
+                    </div>
+                </div>
+                
+                <div class="location-form">
+                    <div class="current-location">
+                        <h3>Current Location</h3>
+                        <div class="address">123 Main Street, Downtown Area, City Name, State 12345</div>
+                        <div class="location-search">
+                            <input type="text" placeholder="Search for address or location">
+                        </div>
+                        <div class="location-buttons">
+                            <button class="btn-location btn-current"><i class="fas fa-location-crosshairs"></i> Use Current Location</button>
+                            <button class="btn-location btn-confirm"><i class="fas fa-check-circle"></i> Confirm Location</button>
+                        </div>
+                    </div>
+                    <p style="margin-top: 20px; color: var(--gray);">Your location helps us find the nearest driving schools</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ride Options -->
+        <div class="section-title">
+            <h2>Choose Your Ride</h2>
+        </div>
+        <p style="text-align: center; margin-bottom: 30px; color: var(--gray);">Choose your preferred ride option</p>
+        
+        <div class="ride-options">
+            <!-- Solo Option -->
+            <div class="ride-card">
+                <div class="ride-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 class="ride-title">Start Solo Now</h3>
+                <p class="ride-description">Personalized driving session with dedicated instructor</p>
+                <div class="ride-tag">Available</div>
+                <p><i class="fas fa-clock"></i> Pickup in 3 mins</p>
+            </div>
+            
+            <!-- Group Option -->
+            <div class="ride-card">
+                <div class="ride-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="ride-title">Wait for Group</h3>
+                <p class="ride-description">Join other learners for a cost-effective session</p>
+                <div class="ride-tag">Available</div>
+                <p><i class="fas fa-clock"></i> Est. wait: 12-15 mins</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-text">7/10 riders joined</div>
+                
+                <div class="eco-note">
+                    <i class="fas fa-leaf"></i> Group rides save up to 60% CO₂ emissions
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>DriveSmart</h3>
+                <p>Your trusted partner in driving education. Find the best instructors and schools near you.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Find Schools</a></li>
+                    <li><a href="#">Courses</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Instructors</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Driving Tips</a></li>
+                    <li><a href="#">Road Safety</a></li>
+                    <li><a href="#">License Guide</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Drive Street, City</li>
+                    <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                    <li><i class="fas fa-envelope"></i> info@drivesmart.com</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2023 DriveSmart. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Toggle between list and map view
+        document.querySelectorAll('.toggle-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.toggle-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // Add animation to school cards on hover
+        const schoolCards = document.querySelectorAll('.school-card');
+        schoolCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-10px)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
