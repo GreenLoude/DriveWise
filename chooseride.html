@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriveSmart - All Driving Schools</title>
+    <title>DriveSmart - Choose Your Ride</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -60,9 +60,16 @@
             color: white;
             padding: 15px 0;
             box-shadow: var(--shadow);
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            width: 100%;
             z-index: 100;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        header.hidden {
+            transform: translateY(-100%);
         }
 
         .header-content {
@@ -84,6 +91,7 @@
         .logo i {
             margin-right: 10px;
         }
+
         .header-right {
             display: flex;
             align-items: center;
@@ -205,6 +213,30 @@
             border-radius: 8px;
         }
 
+        .hero {
+            background: linear-gradient(rgba(37, 99, 235, 0.9), rgba(37, 99, 235, 0.8)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 80px 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            margin-top: 70px;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+
         .section-title {
             text-align: center;
             margin-bottom: 40px;
@@ -229,109 +261,156 @@
             border-radius: 2px;
         }
 
-        .schools-grid {
+        .ride-options {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 25px;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
+            width: 300px;
+            margin: 0 auto;
         }
 
-        .school-card {
+        .option-card {
             background-color: white;
             border-radius: var(--radius);
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 20px;
+            position: relative;
         }
 
-        .school-card:hover {
+        .option-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .card-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--light-gray);
+        .option-card.selected {
+            border: 2px solid var(--primary);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
         }
 
-        .card-header h3 {
+        .option-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .option-title {
             font-size: 1.4rem;
+            color: var(--dark);
             margin-bottom: 10px;
-        }
-
-        .rating {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .stars {
-            color: #f59e0b;
-            margin-right: 10px;
-        }
-
-        .rating-value {
-            font-weight: 500;
-        }
-
-        .card-details {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-        }
-
-        .distance, .price {
-            display: flex;
-            align-items: center;
-        }
-
-        .distance i, .price i {
-            margin-right: 5px;
-            color: var(--gray);
+            font-weight: 600;
         }
 
         .availability {
-            display: inline-block;
-            padding: 5px 10px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
             background-color: var(--accent);
             color: white;
+            padding: 5px 10px;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 500;
         }
 
-        .card-body {
+        .option-details {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 3px solid var(--primary);
+        }
+
+        .detail-item {
+            font-size: 0.9rem;
+            margin: 8px 0;
+            color: var(--gray);
+        }
+
+        .highlight {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--light-gray);
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            width: 70%;
+            transition: width 0.3s ease;
+        }
+
+        .confirm-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .eco-benefit {
+            background: var(--light);
             padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: center;
+            border-left: 3px solid var(--primary);
         }
 
-        .next-session {
+        .eco-icon {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-right: 8px;
+        }
+
+        .confirmation {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid var(--light-gray);
+            margin-top: 20px;
+        }
+
+        .note {
+            color: var(--gray);
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .location {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .next-session span {
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            color: var(--dark);
             font-weight: 500;
-            color: var(--primary);
+            font-size: 0.9rem;
         }
 
-        .view-details {
-            display: flex;
-            align-items: center;
-            color: var(--primary);
-            font-weight: 500;
-            text-decoration: none;
-        }
-
-        .view-details i {
-            margin-left: 5px;
-            transition: transform 0.3s ease;
-        }
-
-        .view-details:hover i {
-            transform: translateX(5px);
+        .location i {
+            color: #e74c3c;
         }
 
         footer {
@@ -423,17 +502,24 @@
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
+            .header-right {
+                flex-direction: column;
+                gap: 10px;
+            }
+
             nav ul {
                 margin-top: 15px;
             }
-            
+
             .hero h1 {
                 font-size: 2.2rem;
             }
-            
-            .schools-grid {
+
+            .ride-options {
                 grid-template-columns: 1fr;
+                flex-direction: column;
+        align-items: center;
             }
 
             .profile-menu {
@@ -451,16 +537,17 @@
                 <i class="fas fa-car"></i>
                 <span>DriveSmart</span>
             </div>
-        <div class="header-right">
-            <nav>
-                
-                <ul>
-                    <li><a href="home_after_login.html"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="#"><i class="fas fa-phone-alt"></i> Contact</a></li>
-                </ul>
-            </nav>
-            <div class="user-profile">
-                <i class="fas fa-user-circle"></i>
+            <div class="header-right">
+                <nav>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#"><i class="fas fa-search-location"></i> Find Schools</a></li>
+                        <li><a href="#"><i class="fas fa-phone-alt"></i> Contact</a></li>
+                    </ul>
+                </nav>
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                </div>
             </div>
         </div>
     </header>
@@ -485,204 +572,59 @@
         </div>
     </div>
 
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Choose Your Ride</h1>
+            <p>Pick your preferred ride option to start your journey</p>
+        </div>
+    </section>
+
     <!-- Main Content -->
     <div class="container">
-        <!-- Schools Section -->
         <div class="section-title">
-            <h2>All Driving Schools</h2>
+            <h2>Ride Options</h2>
         </div>
-        
-        <div class="schools-grid">
-            <!-- School Card 1 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Pro Drive Academy</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="rating-value">4.8</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 2.3 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥2,500/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Today</span>
+
+        <div class="ride-options">
+            <div class="option-card">
+                <div class="availability">Available</div>
+                <div class="option-icon">
+                    <i class="fas fa-user"></i>
                 </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Today at 2 PM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
+                <h2 class="option-title">Start Solo Now</h2>
+                <div class="option-details">
+                    <p class="detail-item"><span class="highlight">Pickup in 3 mins</span></p>
                 </div>
-            </div>
-            
-            <!-- School Card 2 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Master Drivers School</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <div class="rating-value">4.5</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 3.1 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥2,800/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Tomorrow</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Tomorrow at 10 AM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- School Card 3 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Elite Driving Institute</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="rating-value">4.7</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 4.2 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥3,200/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Today</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Today at 4 PM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+                <button class="confirm-btn">Select Solo Ride</button>
             </div>
 
-            <!-- School Card 4 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>City Road Masters</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <div class="rating-value">4.6</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 5.0 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥2,700/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Today</span>
+            <div class="option-card">
+                <div class="availability">Available</div>
+                <div class="option-icon">
+                    <i class="fas fa-users"></i>
                 </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Today at 3 PM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                <h2 class="option-title">Wait for Group</h2>
+                <div class="option-details">
+                    <p class="detail-item"><span class="highlight">Est. wait: 12-15 mins</span></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
                     </div>
+                    <p class="detail-item"><span class="highlight">7/10 riders joined</span></p>
                 </div>
+                <button class="confirm-btn">Join Group Ride</button>
             </div>
+        </div>
 
-            <!-- School Card 5 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Safe Wheels Academy</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="rating-value">4.9</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 6.1 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥3,000/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Tomorrow</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Tomorrow at 9 AM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
+        <div class="eco-benefit">
+            <p><i class="fas fa-leaf eco-icon"></i> <span class="highlight">Group rides save up to 60% CO₂ emissions</span></p>
+        </div>
 
-            <!-- School Card 6 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Urban Drive School</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <div class="rating-value">4.4</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 7.5 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥2,600/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Today</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Today at 5 PM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+        <div class="confirmation">
+            <h3>Tip:You can change your mind later</h3>
+            <div class="location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>123 Main Street, Downtown</span>
             </div>
         </div>
     </div>
@@ -692,7 +634,7 @@
         <div class="footer-content">
             <div class="footer-column">
                 <h3>DriveSmart</h3>
-                <p>Your trusted partner in driving education. Find the best instructors and schools near you.</p>
+                <p>Your trusted partner in driving education and ride services. Find the best options near you.</p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-twitter"></i></a>
@@ -700,17 +642,17 @@
                     <a href="#"><i class="fab fa-linkedin-in"></i></a>
                 </div>
             </div>
-            
+
             <div class="footer-column">
                 <h3>Quick Links</h3>
                 <ul class="footer-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="schools.html">Find Schools</a></li>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Find Schools</a></li>
                     <li><a href="#">Pricing</a></li>
-                    <li><a href="#">Instructors</a></li>
+                    <li><a href="#">Ride Options</a></li>
                 </ul>
             </div>
-            
+
             <div class="footer-column">
                 <h3>Resources</h3>
                 <ul class="footer-links">
@@ -721,7 +663,7 @@
                     <li><a href="#">Blog</a></li>
                 </ul>
             </div>
-            
+
             <div class="footer-column">
                 <h3>Contact Us</h3>
                 <ul class="footer-links">
@@ -731,40 +673,61 @@
                 </ul>
             </div>
         </div>
-        
+
         <div class="copyright">
             © 2023 DriveSmart. All rights reserved.
         </div>
     </footer>
 
     <script>
-        // Add animation to school cards on hover
-        const schoolCards = document.querySelectorAll('.school-card');
-        schoolCards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.transform = 'translateY(-10px)';
-            });
-            
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateY(0)';
-            });
-        });
-
-        // Page transition handling
-        document.querySelectorAll('a[href="index.html"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.body.style.opacity = '0';
-                setTimeout(() => {
-                    window.location.href = this.getAttribute('href');
-                }, 300);
-            });
-        });
-
-        // Apply transition on page load
+        // Page load animation
         window.addEventListener('load', () => {
             document.body.classList.add('page-transition');
             document.body.style.opacity = '1';
+        });
+
+        // Add animation to option cards on page load
+        const optionCards = document.querySelectorAll('.option-card');
+        setTimeout(() => {
+            optionCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 200 * index);
+            });
+        }, 300);
+
+        // Add selection functionality
+        optionCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (e.target.classList.contains('confirm-btn')) return;
+                optionCards.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Add hover effect to buttons
+        const buttons = document.querySelectorAll('.confirm-btn');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = 'var(--secondary)';
+            });
+            button.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'var(--primary)';
+            });
+        });
+
+        // Smart header scroll behavior
+        let lastScrollTop = 0;
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            let currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (currentScrollTop > lastScrollTop) {
+                header.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
+            }
+            lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
         });
 
         // Profile menu toggle
