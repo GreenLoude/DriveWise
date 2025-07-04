@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveSmart - Find Driving Schools Near You</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light-gray: #e2e8f0;
+            --border: #cbd5e1;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .page-transition {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            position: fixed; /* Changed from sticky to fixed for smoother hide/show */
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav li {
+            margin-left: 25px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        nav a i {
+            margin-right: 5px;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .user-profile:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease-in-out;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .profile-menu.active {
+            right: 0;
+        }
+
+        .profile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .profile-menu-header h3 {
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+
+        .close-menu {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .profile-details {
+            padding: 20px;
+        }
+
+        .profile-details p {
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .profile-details strong {
+            color: var(--dark);
+        }
+
+        .profile-actions {
+            margin-top: 20px;
+        }
+
+        .profile-actions a {
+            display: block;
+            padding: 10px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .profile-actions a:hover {
+            background-color: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(37, 99, 235, 0.9), rgba(37, 99, 235, 0.8)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 80px 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            margin-top: 70px; /* Add margin to prevent content from hiding under fixed header */
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+
+        .search-bar {
+            max-width: 700px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 18px 20px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-bar button {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 13px 25px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .set-location-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .set-location-btn:hover {
+            background: #059669;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .toggle-btn {
+            padding: 10px 25px;
+            background-color: white;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-weight: 500;
+            border-radius: 30px;
+        }
+
+        .toggle-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .school-card {
+            background-color: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .school-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .card-header h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .stars {
+            color: #f59e0b;
+            margin-right: 10px;
+        }
+
+        .rating-value {
+            font-weight: 500;
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .distance, .price {
+            display: flex;
+            align-items: center;
+        }
+
+        .distance i, .price i {
+            margin-right: 5px;
+            color: var(--gray);
+        }
+
+        .availability {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .next-session {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .next-session span {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .view-details {
+            display: flex;
+            align-items: center;
+            color: var(--primary);
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .view-details i {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .view-details:hover i {
+            transform: translateX(5px);
+        }
+
+        .continue-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto 50px;
+            padding: 15px;
+            font-size: 1.1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .continue-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .continue-btn.active i {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-schools {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            margin-bottom: 0;
+        }
+
+        .dropdown-schools.active {
+            max-height: 1200px; /* Adjust based on content height */
+            margin-bottom: 30px;
+        }
+
+        .location-section {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .location-content {
+            display: flex;
+            gap: 30px;
+        }
+
+        .location-form {
+            flex: 2;
+        }
+
+        .current-location {
+            background-color: var(--light);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+        }
+
+        .current-location h3 {
+            margin-bottom: 15px;
+        }
+
+        .address {
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .location-search {
+            margin-bottom: 20px;
+        }
+
+        .location-search input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .location-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-location {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-location i {
+            margin-right: 10px;
+        }
+
+        .btn-current {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-confirm {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 50px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #334155;
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header-right {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            nav ul {
+                margin-top: 15px;
+            }
+            
+            .location-content {
+                flex-direction: column;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .schools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-menu {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body class="page-transition">
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-car"></i>
+                <span>DriveSmart</span>
+            </div>
+            <div class="header-right">
+                <nav>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#"><i class="fas fa-search-location"></i> Find Schools</a></li>
+                        <li><a href="#"><i class="fas fa-phone-alt"></i> Contact</a></li>
+                    </ul>
+                </nav>
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Profile Menu -->
+    <div class="profile-menu">
+        <div class="profile-menu-header">
+            <h3>User Profile</h3>
+            <button class="close-menu"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="profile-details">
+            <p><strong>Name:</strong> John Doe</p>
+            <p><strong>Email:</strong> john.doe@example.com</p>
+            <p><strong>Phone:</strong> +1 (555) 123-4567</p>
+            <p><strong>Joined:</strong> January 2025</p>
+        </div>
+        <div class="profile-actions">
+            <a href="#">Edit Profile</a>
+            <a href="#">View Bookings</a>
+            <a href="#">Settings</a>
+            <a href="#">Logout</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Choose a Driving School Near You</h1>
+            <p>Find certified instructors in your area and start your driving journey today</p>
+            <div class="search-bar">
+                <input type="text" placeholder="Search by school name or location">
+                <button><i class="fas fa-search"></i> Search</button>
+            </div>
+            <button class="set-location-btn" id="set-location-btn"><i class="fas fa-location-dot"></i> Set Your Location</button>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Schools Section -->
+        <div class="section-title">
+            <h2>Top Driving Schools Near You</h2>
+        </div>
+        
+        <div class="view-toggle">
+            <div class="toggle-btn active">List</div>
+        </div>
+        
+        <div class="schools-grid">
+            <!-- School Card 1 -->
+            <div class="school-card">
+                <div class="card-header">
+                    <h3>Pro Drive Academy</h3>
+                    <div class="rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="rating-value">4.8</div>
+                    </div>
+                    <div class="card-details">
+                        <div class="distance">
+                            <i class="fas fa-location-dot"></i> 2.3 km
+                        </div>
+                        <div class="price">
+                            <i class="fas fa-tag"></i> ¥2,500/session
+                        </div>
+                    </div>
+                    <span class="availability">Available Today</span>
+                </div>
+                <div class="card-body">
+                    <div class="next-session">
+                        <span>Next: Today at 2 PM</span>
+                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- School Card 2 -->
+            <div class="school-card">
+                <div class="card-header">
+                    <h3>Master Drivers School</h3>
+                    <div class="rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <div class="rating-value">4.5</div>
+                    </div>
+                    <div class="card-details">
+                        <div class="distance">
+                            <i class="fas fa-location-dot"></i> 3.1 km
+                        </div>
+                        <div class="price">
+                            <i class="fas fa-tag"></i> ¥2,800/session
+                        </div>
+                    </div>
+                    <span class="availability">Available Tomorrow</span>
+                </div>
+                <div class="card-body">
+                    <div class="next-session">
+                        <span>Next: Tomorrow at 10 AM</span>
+                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- School Card 3 -->
+            <div class="school-card">
+                <div class="card-header">
+                    <h3>Elite Driving Institute</h3>
+                    <div class="rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="rating-value">4.7</div>
+                    </div>
+                    <div class="card-details">
+                        <div class="distance">
+                            <i class="fas fa-location-dot"></i> 4.2 km
+                        </div>
+                        <div class="price">
+                            <i class="fas fa-tag"></i> ¥3,200/session
+                        </div>
+                    </div>
+                    <span class="availability">Available Today</span>
+                </div>
+                <div class="card-body">
+                    <div class="next-session">
+                        <span>Next: Today at 4 PM</span>
+                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dropdown for More Schools -->
+        <div class="dropdown-schools" id="dropdown-schools">
+            <div class="schools-grid">
+                <!-- Additional School Card 1 -->
+                <div class="school-card">
+                    <div class="card-header">
+                        <h3>City Road Masters</h3>
+                        <div class="rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <div class="rating-value">4.6</div>
+                        </div>
+                        <div class="card-details">
+                            <div class="distance">
+                                <i class="fas fa-location-dot"></i> 5.0 km
+                            </div>
+                            <div class="price">
+                                <i class="fas fa-tag"></i> ¥2,700/session
+                            </div>
+                        </div>
+                        <span class="availability">Available Today</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="next-session">
+                            <span>Next: Today at 3 PM</span>
+                            <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional School Card 2 -->
+                <div class="school-card">
+                    <div class="card-header">
+                        <h3>Safe Wheels Academy</h3>
+                        <div class="rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="rating-value">4.9</div>
+                        </div>
+                        <div class="card-details">
+                            <div class="distance">
+                                <i class="fas fa-location-dot"></i> 6.1 km
+                            </div>
+                            <div class="price">
+                                <i class="fas fa-tag"></i> ¥3,000/session
+                            </div>
+                        </div>
+                        <span class="availability">Available Tomorrow</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="next-session">
+                            <span>Next: Tomorrow at 9 AM</span>
+                            <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional School Card 3 -->
+                <div class="school-card">
+                    <div class="card-header">
+                        <h3>Urban Drive School</h3>
+                        <div class="rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <div class="rating-value">4.4</div>
+                        </div>
+                        <div class="card-details">
+                            <div class="distance">
+                                <i class="fas fa-location-dot"></i> 7.5 km
+                            </div>
+                            <div class="price">
+                                <i class="fas fa-tag"></i> ¥2,600/session
+                            </div>
+                        </div>
+                        <span class="availability">Available Today</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="next-session">
+                            <span>Next: Today at 5 PM</span>
+                            <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="continue-btn" id="more-schools-btn">More <i class="fas fa-chevron-down"></i></button>
+        
+        <!-- Location Section -->
+        <div class="section-title">
+            <h2>Set Your Location</h2>
+        </div>
+        
+        <div class="location-section">
+            <div class="location-content">
+                <div class="location-form">
+                    <div class="current-location">
+                        <h3>Current Location</h3>
+                        <div class="address">123 Main Street, Downtown Area, City Name, State 12345</div>
+                        <div class="location-search">
+                            <input type="text" placeholder="Search for address or location">
+                        </div>
+                        <div class="location-buttons">
+                            <button class="btn-location btn-current"><i class="fas fa-location-crosshairs"></i> Use Current Location</button>
+                            <button class="btn-location btn-confirm"><i class="fas fa-check-circle"></i> Confirm Location</button>
+                        </div>
+                    </div>
+                    <p style="margin-top: 20px; color: var(--gray);">Your location helps us find the nearest driving schools</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>DriveSmart</h3>
+                <p>Your trusted partner in driving education. Find the best instructors and schools near you.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Find Schools</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Instructors</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Driving Tips</a></li>
+                    <li><a href="#">Road Safety</a></li>
+                    <li><a href="#">License Guide</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Drive Street, City</li>
+                    <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                    <li><i class="fas fa-envelope"></i> info@drivesmart.com</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            © 2023 DriveSmart. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Toggle between list view
+        document.querySelectorAll('.toggle-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.toggle-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // Add animation to school cards on hover
+        const schoolCards = document.querySelectorAll('.school-card');
+        schoolCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-10px)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Toggle dropdown for more schools and change button text
+        const moreSchoolsBtn = document.getElementById('more-schools-btn');
+        const dropdownSchools = document.getElementById('dropdown-schools');
+        moreSchoolsBtn.addEventListener('click', () => {
+            dropdownSchools.classList.toggle('active');
+            moreSchoolsBtn.classList.toggle('active');
+            if (dropdownSchools.classList.contains('active')) {
+                moreSchoolsBtn.firstChild.textContent = 'Less ';
+            } else {
+                moreSchoolsBtn.firstChild.textContent = 'More ';
+            }
+        });
+
+        // Smooth scroll to location section
+        const setLocationBtn = document.getElementById('set-location-btn');
+        setLocationBtn.addEventListener('click', () => {
+            document.querySelector('.location-section').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Apply transition on page load
+        window.addEventListener('load', () => {
+            document.body.classList.add('page-transition');
+            document.body.style.opacity = '1';
+        });
+
+        // Profile menu toggle
+        const profileIcon = document.querySelector('.user-profile');
+        const profileMenu = document.querySelector('.profile-menu');
+        const closeMenuBtn = document.querySelector('.close-menu');
+
+        profileIcon.addEventListener('click', () => {
+            profileMenu.classList.toggle('active');
+        });
+
+        closeMenuBtn.addEventListener('click', () => {
+            profileMenu.classList.remove('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileMenu.contains(e.target) && !profileIcon.contains(e.target)) {
+                profileMenu.classList.remove('active');
+            }
+        });
+
+        // Smart header scroll behavior
+        let lastScrollTop = 0;
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            let currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (currentScrollTop > lastScrollTop) {
+                // Scrolling down
+                header.classList.add('hidden');
+            } else {
+                // Scrolling up
+                header.classList.remove('hidden');
+            }
+            lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Prevent negative scroll
+        });
+    </script>
+</body>
+</html>
