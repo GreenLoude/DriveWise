@@ -734,7 +734,43 @@
             slot.addEventListener('click', () => {
                 document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('active'));
                 slot.classList.add('active');
+                checkBookingReady();
             });
+        });
+
+        // Confirm button enable/disable logic
+        const confirmBtn = document.querySelector('.confirm-btn');
+        function checkBookingReady() {
+            const vehicleSelected = document.querySelector('.vehicle-option.active');
+            const daySelected = document.querySelector('.calendar-day.active');
+            const timeSelected = document.querySelector('.time-slot.active');
+            if (vehicleSelected && daySelected && timeSelected) {
+                confirmBtn.disabled = false;
+                confirmBtn.style.opacity = '1';
+                confirmBtn.style.pointerEvents = 'auto';
+            } else {
+                confirmBtn.disabled = true;
+                confirmBtn.style.opacity = '0.6';
+                confirmBtn.style.pointerEvents = 'none';
+            }
+        }
+
+        // Initial state
+        checkBookingReady();
+
+        // Add listeners for vehicle and calendar selection
+        document.querySelectorAll('.vehicle-option').forEach(option => {
+            option.addEventListener('click', checkBookingReady);
+        });
+        document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+            day.addEventListener('click', checkBookingReady);
+        });
+
+        // Redirect to payment_section.html on confirm
+        confirmBtn.addEventListener('click', function() {
+            if (!confirmBtn.disabled) {
+                window.location.href = 'payment_section.html';
+            }
         });
     </script>
 </body>
