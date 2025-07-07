@@ -787,7 +787,43 @@
             slot.addEventListener('click', () => {
                 document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('active'));
                 slot.classList.add('active');
+                checkGroupBookingReady();
             });
+        });
+
+        // Confirm button enable/disable logic for group booking
+        const joinBtn = document.querySelector('.join-btn');
+        function checkGroupBookingReady() {
+            const vehicleSelected = document.querySelector('.vehicle-option.active');
+            const daySelected = document.querySelector('.calendar-day.active');
+            const timeSelected = document.querySelector('.time-slot.active');
+            if (vehicleSelected && daySelected && timeSelected) {
+                joinBtn.disabled = false;
+                joinBtn.style.opacity = '1';
+                joinBtn.style.pointerEvents = 'auto';
+            } else {
+                joinBtn.disabled = true;
+                joinBtn.style.opacity = '0.6';
+                joinBtn.style.pointerEvents = 'none';
+            }
+        }
+
+        // Initial state
+        checkGroupBookingReady();
+
+        // Add listeners for vehicle and calendar selection
+        document.querySelectorAll('.vehicle-option').forEach(option => {
+            option.addEventListener('click', checkGroupBookingReady);
+        });
+        document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
+            day.addEventListener('click', checkGroupBookingReady);
+        });
+
+        // Redirect to payment_section.html on confirm group booking
+        joinBtn.addEventListener('click', function() {
+            if (!joinBtn.disabled) {
+                window.location.href = 'payment_section.html';
+            }
         });
     </script>
 </body>
