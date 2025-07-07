@@ -351,7 +351,9 @@
         }
 
         .confirm-btn {
-            display: block;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             width: 100%;
             padding: 12px;
             background: var(--primary);
@@ -362,6 +364,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-decoration: none;
         }
 
         .confirm-btn:hover {
@@ -596,7 +599,7 @@
                 <div class="option-details">
                     <p class="detail-item"><span class="highlight">Pickup in 3 mins</span></p>
                 </div>
-                <button class="confirm-btn">Select Solo Ride</button>
+                <a href="solo_ride.html" class="confirm-btn">Select Solo Ride</a>
             </div>
 
             <div class="option-card">
@@ -612,7 +615,7 @@
                     </div>
                     <p class="detail-item"><span class="highlight">7/10 riders joined</span></p>
                 </div>
-                <button class="confirm-btn">Join Group Ride</button>
+                <a href="group_ride.html" class="confirm-btn">Join Group Ride</a>
             </div>
         </div>
 
