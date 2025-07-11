@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearby Driving Schools - DriveSmart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #f1f5f9;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            padding: 32px 24px 24px 24px;
+        }
+        h1 {
+            text-align: center;
+            color: #2563eb;
+            margin-bottom: 8px;
+        }
+        .address-info {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 32px;
+        }
+        .schools-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        .school-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.07);
+            padding: 20px 18px 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .school-card:hover {
+            box-shadow: 0 6px 18px rgba(37,99,235,0.13);
+            transform: translateY(-3px);
+        }
+        .school-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .school-details {
+            font-size: 0.98rem;
+            color: #334155;
+            margin-bottom: 4px;
+        }
+        .school-distance {
+            color: #10b981;
+            font-weight: 500;
+        }
+        .rating {
+            color: #f59e0b;
+            font-size: 1.1rem;
+        }
+        .back-btn {
+            display: inline-block;
+            margin: 24px auto 0 auto;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 32px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.10);
+            transition: background 0.2s;
+        }
+        .back-btn:hover {
+            background: #1742a7;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 16px 4px; }
+            h1 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-map-marker-alt"></i> Nearby Driving Schools</h1>
+        <div class="address-info" id="user-address">Showing results near your selected location.</div>
+        <div class="schools-list" id="schools-list">
+            <!-- Example static cards, can be replaced with dynamic JS later -->
+            <div class="school-card">
+                <div class="school-title">Pro Drive Academy</div>
+                <div class="school-details">2.3 km away &bull; Kozhikode, Kerala</div>
+                <div class="rating">
+                    <i class="fas fa-star"></i> 4.8
+                </div>
+            </div>
+            <div class="school-card">
+                <div class="school-title">Master Drivers School</div>
+                <div class="school-details">3.1 km away &bull; Kozhikode, Kerala</div>
+                <div class="rating">
+                    <i class="fas fa-star"></i> 4.5
+                </div>
+            </div>
+            <div class="school-card">
+                <div class="school-title">Elite Driving Institute</div>
+                <div class="school-details">4.2 km away &bull; Kozhikode, Kerala</div>
+                <div class="rating">
+                    <i class="fas fa-star"></i> 4.7
+                </div>
+            </div>
+            <div class="school-card">
+                <div class="school-title">City Road Masters</div>
+                <div class="school-details">5.0 km away &bull; Kozhikode, Kerala</div>
+                <div class="rating">
+                    <i class="fas fa-star"></i> 4.6
+                </div>
+            </div>
+            <div class="school-card">
+                <div class="school-title">Safe Wheels Academy</div>
+                <div class="school-details">6.1 km away &bull; Kozhikode, Kerala</div>
+                <div class="rating">
+                    <i class="fas fa-star"></i> 4.9
+                </div>
+            </div>
+            <div class="school-card">
+                <div class="school-title">Urban Drive School</div>
+                <div class="school-details">7.5 km away &bull; Kozhikode, Kerala</div>
+                <div class="rating">
+                    <i class="fas fa-star"></i> 4.4
+                </div>
+            </div>
+        </div>
+        <button class="back-btn" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+</body>
+</html>

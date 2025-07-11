@@ -566,57 +566,10 @@
             </div>
 
             <div class="date-time-selection">
-                <h3>Select Date & Time</h3>
-                <div class="calendar">
-                    <div class="calendar-header">
-                        <div>S</div>
-                        <div>M</div>
-                        <div>T</div>
-                        <div>W</div>
-                        <div>T</div>
-                        <div>F</div>
-                        <div>S</div>
-                    </div>
-                    <div class="calendar-day empty"></div>
-                    <div class="calendar-day">1</div>
-                    <div class="calendar-day">2</div>
-                    <div class="calendar-day">3</div>
-                    <div class="calendar-day">4</div>
-                    <div class="calendar-day">5</div>
-                    <div class="calendar-day">6</div>
-                    <div class="calendar-day">7</div>
-                    <div class="calendar-day">8</div>
-                    <div class="calendar-day">9</div>
-                    <div class="calendar-day">10</div>
-                    <div class="calendar-day">11</div>
-                    <div class="calendar-day">12</div>
-                    <div class="calendar-day">13</div>
-                    <div class="calendar-day">14</div>
-                    <div class="calendar-day">15</div>
-                    <div class="calendar-day">16</div>
-                    <div class="calendar-day">17</div>
-                    <div class="calendar-day">18</div>
-                    <div class="calendar-day">19</div>
-                    <div class="calendar-day">20</div>
-                    <div class="calendar-day">21</div>
-                    <div class="calendar-day">22</div>
-                    <div class="calendar-day">23</div>
-                    <div class="calendar-day">24</div>
-                    <div class="calendar-day">25</div>
-                    <div class="calendar-day">26</div>
-                    <div class="calendar-day">27</div>
-                    <div class="calendar-day">28</div>
-                    <div class="calendar-day">29</div>
-                    <div class="calendar-day">30</div>
-                    <div class="calendar-day">31</div>
-                </div>
-                <div class="time-slots">
-                    <div class="time-slot">09:00 AM</div>
-                    <div class="time-slot">10:00 AM</div>
-                    <div class="time-slot">11:00 AM</div>
-                    <div class="time-slot">12:00 PM</div>
-                    <div class="time-slot">01:00 PM</div>
-                    <div class="time-slot">02:00 PM</div>
+                <h3>Select Date</h3>
+                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                    <label for="solo-date-picker" style="font-weight: 500; margin-right: 10px;">Choose Date:</label>
+                    <input type="date" id="solo-date-picker" min="2025-07-08" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 1rem;" />
                 </div>
             </div>
 
@@ -721,30 +674,15 @@
             });
         });
 
-        // Calendar day selection
-        document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
-            day.addEventListener('click', () => {
-                document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
-                day.classList.add('active');
-            });
-        });
 
-        // Time slot selection
-        document.querySelectorAll('.time-slot').forEach(slot => {
-            slot.addEventListener('click', () => {
-                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('active'));
-                slot.classList.add('active');
-                checkBookingReady();
-            });
-        });
+
 
         // Confirm button enable/disable logic
         const confirmBtn = document.querySelector('.confirm-btn');
         function checkBookingReady() {
             const vehicleSelected = document.querySelector('.vehicle-option.active');
-            const daySelected = document.querySelector('.calendar-day.active');
-            const timeSelected = document.querySelector('.time-slot.active');
-            if (vehicleSelected && daySelected && timeSelected) {
+            const dateSelected = document.getElementById('solo-date-picker').value !== '';
+            if (vehicleSelected && dateSelected) {
                 confirmBtn.disabled = false;
                 confirmBtn.style.opacity = '1';
                 confirmBtn.style.pointerEvents = 'auto';
@@ -758,13 +696,11 @@
         // Initial state
         checkBookingReady();
 
-        // Add listeners for vehicle and calendar selection
+        // Add listeners for vehicle selection and date picker
         document.querySelectorAll('.vehicle-option').forEach(option => {
             option.addEventListener('click', checkBookingReady);
         });
-        document.querySelectorAll('.calendar-day:not(.empty)').forEach(day => {
-            day.addEventListener('click', checkBookingReady);
-        });
+        document.getElementById('solo-date-picker').addEventListener('change', checkBookingReady);
 
         // Redirect to payment_section.html on confirm
         confirmBtn.addEventListener('click', function() {
