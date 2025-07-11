@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,7 +63,7 @@
             color: white;
             padding: 15px 0;
             box-shadow: var(--shadow);
-            position: fixed; /* Changed from sticky to fixed for smoother hide/show */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -223,7 +224,7 @@
             text-align: center;
             color: white;
             margin-bottom: 40px;
-            margin-top: 70px; /* Add margin to prevent content from hiding under fixed header */
+            margin-top: 70px;
         }
 
         .hero h1 {
@@ -474,7 +475,7 @@
         }
 
         .dropdown-schools.active {
-            max-height: 1200px; /* Adjust based on content height */
+            max-height: 1200px;
             margin-bottom: 30px;
         }
 
@@ -501,7 +502,7 @@
             border-radius: var(--radius);
             margin-bottom: 25px;
         }
-        /* Leaflet map custom style */
+
         #map {
             height: 300px;
             width: 100%;
@@ -521,6 +522,7 @@
 
         .location-search {
             margin-bottom: 20px;
+            position: relative;
         }
 
         .location-search input {
@@ -529,6 +531,37 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             font-size: 1rem;
+        }
+
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .suggestions-dropdown.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--dark);
+            transition: background-color 0.2s ease;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--light-gray);
         }
 
         .location-buttons {
@@ -899,8 +932,8 @@
                                 <i class="fas fa-location-dot"></i> 6.1 km
                             </div>
                             <div class="price">
-                            <i class="fas fa-tag"></i> ¥3,000/session
-                        </div>
+                                <i class="fas fa-tag"></i> ¥3,000/session
+                            </div>
                         </div>
                         <span class="availability">Available Tomorrow</span>
                     </div>
@@ -961,6 +994,7 @@
                         <div class="address">123 Main Street, Downtown Area, City Name, State 12345</div>
                         <div class="location-search">
                             <input type="text" placeholder="Search for address or location">
+                            <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
                         </div>
                         <div class="location-buttons">
                             <button class="btn-location btn-current"><i class="fas fa-location-crosshairs"></i> Use Current Location</button>
@@ -1028,217 +1062,368 @@
     <script>
         // LEAFLET MAP SETUP
         let map, marker;
-        // Default: Kozhikode, Kerala, India (English)
-        function initMap(lat = 11.2588, lng = 75.7804) {
-            map = L.map('map').setView([lat, lng], 13);
+        const keralaBounds = [[8.0, 74.8], [12.8, 77.4]]; // Kerala's lat/lng bounds
+        const defaultLocation = { lat: 11.2588, lng: 75.7804 }; // Kozhikode, Kerala
+
+        function initMap(lat = defaultLocation.lat, lng = defaultLocation.lng) {
+            map = L.map('map', {
+                maxBounds: keralaBounds,
+                maxBoundsViscosity: 1.0,
+                minZoom: 8,
+                maxZoom: 18
+            }).setView([lat, lng], 13);
+
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
+                attribution: '© OpenStreetMap contributors'
             }).addTo(map);
-            marker = L.marker([lat, lng], {draggable: true}).addTo(map);
-            // Update address field on marker drag (with reverse geocoding for real address)
-            marker.on('dragend', function(e) {
+
+            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+
+            // Restrict marker dragging to Kerala bounds
+            marker.on('dragend', function (e) {
                 const pos = marker.getLatLng();
-                fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.lat}&lon=${pos.lng}&format=json&accept-language=en`)
-                  .then(res => res.json())
-                  .then(data => {
-                    const addr = formatShortAddress(data.address, data.display_name, pos.lat, pos.lng);
-                    document.querySelector('.address').textContent = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
-                  })
-                  .catch(() => {
-                    document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
-                  });
+                let newLat = pos.lat;
+                let newLng = pos.lng;
+
+                // Snap marker back to Kerala bounds if outside
+                if (pos.lat < keralaBounds[0][0]) newLat = keralaBounds[0][0];
+                if (pos.lat > keralaBounds[1][0]) newLat = keralaBounds[1][0];
+                if (pos.lng < keralaBounds[0][1]) newLng = keralaBounds[0][1];
+                if (pos.lng > keralaBounds[1][1]) newLng = keralaBounds[1][1];
+
+                if (newLat !== pos.lat || newLng !== pos.lng) {
+                    marker.setLatLng([newLat, newLng]);
+                    map.setView([newLat, newLng], map.getZoom());
+                }
+
+                // Update address
+                fetch(`https://nominatim.openstreetmap.org/reverse?lat=${newLat}&lon=${newLng}&format=json&addressdetails=1&accept-language=en`)
+                    .then((res) => res.json())
+                    .then((data) => {
+                        const addr = formatShortAddress(data.address, data.display_name, newLat, newLng);
+                        document.querySelector('.address').textContent = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
+                        window.latestKeralaAddress = isKeralaLocation(data.address, data.display_name, newLat, newLng) ? data.address : null;
+                        console.log('Drag Address:', data.address, 'Display Name:', data.display_name, 'Is Kerala:', window.latestKeralaAddress !== null);
+                    })
+                    .catch((error) => {
+                        console.error('Drag error:', error);
+                        document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
+                        window.latestKeralaAddress = null;
+                    });
             });
         }
 
-        // Use current location button
-        document.querySelector('.btn-current').addEventListener('click', function() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(pos) {
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-                    map.setView([lat, lng], 15);
-                    marker.setLatLng([lat, lng]);
-                    // Reverse geocode to get address
-                    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`)
-                      .then(res => res.json())
-                      .then(data => {
-                        const addr = formatShortAddress(data.address, data.display_name, lat, lng);
-                        document.querySelector('.address').textContent = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
-                        // Also set the address in the search bar
-                        const searchInput = document.querySelector('.location-search input');
-                        if (searchInput) {
-                          searchInput.value = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
-                        }
-                        // Always update latestKeralaAddress with the full address object (for confirm to work)
-                        // Also add a special flag for Kerala detection
-                        let isKerala = false;
-                        if (data.address) {
-                          for (const key in data.address) {
-                            if (typeof data.address[key] === 'string' && /kerala/i.test(data.address[key])) {
-                              isKerala = true;
-                              break;
-                            }
-                          }
-                        }
-                        window.latestKeralaAddress = isKerala ? data.address : null;
-                        // For debug: log the address and state
-                        // console.log('Current location address:', data.address);
-                      })
-                      .catch(() => {
-                        document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
-                        // Also set fallback in the search bar
-                        const searchInput = document.querySelector('.location-search input');
-                        if (searchInput) {
-                          searchInput.value = 'Kozhikode, Kerala, India';
-                        }
-                        if (window.latestKeralaAddress !== undefined) {
-                          window.latestKeralaAddress = null;
-                        }
-                      });
-                }, function() {
-                    alert('Unable to retrieve your location.');
+        // Helper function to check if the location is in Kerala
+        function isKeralaLocation(address, displayName, lat, lng) {
+            // First check coordinates to ensure they are within Kerala bounds
+            if (!lat || !lng || lat < 8.0 || lat > 12.8 || lng < 74.8 || lng > 77.4) {
+                return false;
+            }
+            if (!address && !displayName) return true; // Within bounds, no address data
+            if (address) {
+                for (const key in address) {
+                    if (typeof address[key] === 'string' && /kerala/i.test(address[key])) return true;
+                }
+                if (address.state && /kerala/i.test(address.state)) return true;
+                if (address.state_district && /kerala/i.test(address.state_district)) return true;
+                if (address.county && /kerala/i.test(address.county)) return true;
+            }
+            if (displayName && /kerala/i.test(displayName)) return true;
+            return true; // Within Kerala's bounds
+        }
+
+        // Helper to format a short address from OSM address object
+        function formatShortAddress(address, displayName, lat, lng) {
+            if (!address) {
+                return displayName && displayName.trim() !== '' ? displayName : 'Kozhikode, Kerala, India';
+            }
+            let parts = [];
+            if (address.road) parts.push(address.road);
+            if (address.suburb) parts.push(address.suburb);
+            if (address.city) parts.push(address.city);
+            else if (address.town) parts.push(address.town);
+            else if (address.village) parts.push(address.village);
+            if (address.state) parts.push(address.state);
+            if (parts.length === 0 && address.county) parts.push(address.county);
+            if (parts.length === 0 && address.country) parts.push(address.country);
+            return parts.join(', ') || (displayName && displayName.trim() !== '' ? displayName : 'Kozhikode, Kerala, India');
+        }
+
+        // Debounce function to limit API calls
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        // Fetch place suggestions
+        const fetchSuggestions = debounce(function (query, callback) {
+            if (!query) {
+                document.getElementById('suggestions-dropdown').innerHTML = '';
+                document.getElementById('suggestions-dropdown').classList.remove('active');
+                return;
+            }
+            let searchQuery = query;
+            if (!/kerala/i.test(query)) {
+                searchQuery += ', Kerala, India';
+            }
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&addressdetails=1&limit=5&accept-language=en`)
+                .then((res) => res.json())
+                .then((results) => {
+                    const suggestions = results.filter((result) => {
+                        const lat = parseFloat(result.lat);
+                        const lon = parseFloat(result.lon);
+                        return isKeralaLocation(result.address, result.display_name, lat, lon);
+                    });
+                    callback(suggestions);
+                })
+                .catch((error) => {
+                    console.error('Suggestion fetch error:', error);
+                    document.getElementById('suggestions-dropdown').innerHTML = '';
+                    document.getElementById('suggestions-dropdown').classList.remove('active');
                 });
+        }, 300);
+
+        // Use current location button
+        document.querySelector('.btn-current').addEventListener('click', function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function (pos) {
+                        let lat = pos.coords.latitude;
+                        let lng = pos.coords.longitude;
+
+                        // Restrict to Kerala bounds
+                        if (lat < keralaBounds[0][0]) lat = keralaBounds[0][0];
+                        if (lat > keralaBounds[1][0]) lat = keralaBounds[1][0];
+                        if (lng < keralaBounds[0][1]) lng = keralaBounds[0][1];
+                        if (lng > keralaBounds[1][1]) lng = keralaBounds[1][1];
+
+                        // If outside Kerala bounds, revert to default
+                        if (!isKeralaLocation(null, null, lat, lng)) {
+                            lat = defaultLocation.lat;
+                            lng = defaultLocation.lng;
+                            document.querySelector('.address').textContent = 'Location outside Kerala, reverting to Kozhikode';
+                            window.latestKeralaAddress = null;
+                        }
+
+                        map.setView([lat, lng], 15);
+                        marker.setLatLng([lat, lng]);
+
+                        // Reverse geocode to get address
+                        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&accept-language=en`)
+                            .then((res) => res.json())
+                            .then((data) => {
+                                const addr = formatShortAddress(data.address, data.display_name, lat, lng);
+                                document.querySelector('.address').textContent = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
+                                const searchInput = document.querySelector('.location-search input');
+                                if (searchInput) {
+                                    searchInput.value = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
+                                }
+                                window.latestKeralaAddress = isKeralaLocation(data.address, data.display_name, lat, lng) ? data.address : null;
+                                console.log('Geolocation Address:', data.address, 'Display Name:', data.display_name, 'Is Kerala:', window.latestKeralaAddress !== null);
+                            })
+                            .catch((error) => {
+                                console.error('Geocoding error:', error);
+                                document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
+                                const searchInput = document.querySelector('.location-search input');
+                                if (searchInput) {
+                                    searchInput.value = 'Kozhikode, Kerala, India';
+                                }
+                                window.latestKeralaAddress = null;
+                            });
+                    },
+                    function (error) {
+                        console.error('Geolocation error:', error);
+                        alert('Unable to retrieve your location. Defaulting to Kozhikode.');
+                        map.setView([defaultLocation.lat, defaultLocation.lng], 13);
+                        marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
+                        document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
+                        window.latestKeralaAddress = null;
+                    }
+                );
             } else {
-                alert('Geolocation is not supported by your browser.');
+                alert('Geolocation is not supported by your browser. Defaulting to Kozhikode.');
+                map.setView([defaultLocation.lat, defaultLocation.lng], 13);
+                marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
+                document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
+                window.latestKeralaAddress = null;
             }
         });
 
-        // Initialize map on DOMContentLoaded
+        // Initialize map and other functionality on DOMContentLoaded
         window.addEventListener('DOMContentLoaded', () => {
             initMap();
+
             // Set initial address for default location
-            fetch('https://nominatim.openstreetmap.org/reverse?lat=11.2588&lon=75.7804&format=json&accept-language=en')
-              .then(res => res.json())
-              .then(data => {
-                document.querySelector('.address').textContent = formatShortAddress(data.address, data.display_name, 11.2588, 75.7804);
-              })
-              .catch(() => {
-                document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
-              });
+            fetch('https://nominatim.openstreetmap.org/reverse?lat=11.2588&lon=75.7804&format=json&addressdetails=1&accept-language=en')
+                .then((res) => res.json())
+                .then((data) => {
+                    const addr = formatShortAddress(data.address, data.display_name, 11.2588, 75.7804);
+                    document.querySelector('.address').textContent = addr;
+                    window.latestKeralaAddress = isKeralaLocation(data.address, data.display_name, 11.2588, 75.7804) ? data.address : null;
+                    console.log('Initial Address:', data.address, 'Display Name:', data.display_name, 'Is Kerala:', window.latestKeralaAddress !== null);
+                })
+                .catch((error) => {
+                    console.error('Initial geocoding error:', error);
+                    document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
+                    window.latestKeralaAddress = null;
+                });
+
+            // Profile menu toggle
+            const userProfile = document.querySelector('.user-profile');
+            const profileMenu = document.querySelector('.profile-menu');
+            const closeMenu = document.querySelector('.close-menu');
+            if (userProfile && profileMenu) {
+                userProfile.addEventListener('click', () => {
+                    profileMenu.classList.toggle('active');
+                });
+            }
+            if (closeMenu && profileMenu) {
+                closeMenu.addEventListener('click', () => {
+                    profileMenu.classList.remove('active');
+                });
+            }
 
             // Scroll to location section when clicking "Search by location" button
             const setLocationBtn = document.getElementById('set-location-btn');
             const locationSection = document.querySelector('.location-section');
             if (setLocationBtn && locationSection) {
-              setLocationBtn.addEventListener('click', function() {
-                locationSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              });
+                setLocationBtn.addEventListener('click', function () {
+                    locationSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
             }
 
             // More button for showing/hiding additional schools
             const moreBtn = document.getElementById('more-schools-btn');
             const dropdown = document.getElementById('dropdown-schools');
             if (moreBtn && dropdown) {
-              let expanded = false;
-              moreBtn.addEventListener('click', function() {
-                expanded = !expanded;
-                dropdown.classList.toggle('active', expanded);
-                moreBtn.innerHTML = expanded ? 'Less <i class="fas fa-chevron-up"></i>' : 'More <i class="fas fa-chevron-down"></i>';
-              });
+                let expanded = false;
+                moreBtn.addEventListener('click', function () {
+                    expanded = !expanded;
+                    dropdown.classList.toggle('active', expanded);
+                    moreBtn.innerHTML = expanded ? 'Less <i class="fas fa-chevron-up"></i>' : 'More <i class="fas fa-chevron-down"></i>';
+                });
             }
 
-            // Store the latest Kerala address for validation (make global)
-            window.latestKeralaAddress = null;
-            // Address search functionality
+            // Address search functionality with suggestions
             const searchInput = document.querySelector('.location-search input');
-            searchInput.addEventListener('keydown', function(e) {
-              if (e.key === 'Enter') {
-                let query = searchInput.value.trim();
-                if (!query) return;
-                // Always append 'Kerala, India' to the query to restrict search to Kerala
-                if (!/kerala/i.test(query)) {
-                  query += ', Kerala, India';
-                }
-                // Geocode the address using Nominatim
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1&accept-language=en`)
-                  .then(res => res.json())
-                  .then(results => {
-                    if (results && results.length > 0) {
-                      const result = results[0];
-                      const lat = parseFloat(result.lat);
-                      const lon = parseFloat(result.lon);
-                      // Check if the result is in Kerala (any field)
-                      let isKerala = false;
-                      if (result.address) {
-                        for (const key in result.address) {
-                          if (typeof result.address[key] === 'string' && /kerala/i.test(result.address[key])) {
-                            isKerala = true;
-                            break;
-                          }
-                        }
-                      }
-                      if (isKerala) {
-                        map.setView([lat, lon], 15);
-                        marker.setLatLng([lat, lon]);
-                        // Show formatted address
-                        const addr = formatShortAddress(result.address, result.display_name, lat, lon);
-                        document.querySelector('.address').textContent = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
-                        window.latestKeralaAddress = result.address;
-                      } else {
-                        document.querySelector('.address').textContent = 'Location not in Kerala';
-                        window.latestKeralaAddress = null;
-                      }
+            const suggestionsDropdown = document.getElementById('suggestions-dropdown');
+
+            searchInput.addEventListener('input', function () {
+                const query = searchInput.value.trim();
+                fetchSuggestions(query, (suggestions) => {
+                    suggestionsDropdown.innerHTML = '';
+                    if (suggestions.length > 0) {
+                        suggestions.forEach((suggestion) => {
+                            const suggestionItem = document.createElement('div');
+                            suggestionItem.className = 'suggestion-item';
+                            suggestionItem.textContent = formatShortAddress(suggestion.address, suggestion.display_name, parseFloat(suggestion.lat), parseFloat(suggestion.lon));
+                            suggestionItem.addEventListener('click', () => {
+                                const lat = parseFloat(suggestion.lat);
+                                const lon = parseFloat(suggestion.lon);
+                                map.setView([lat, lon], 15);
+                                marker.setLatLng([lat, lon]);
+                                const addr = formatShortAddress(suggestion.address, suggestion.display_name, lat, lon);
+                                document.querySelector('.address').textContent = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
+                                searchInput.value = addr;
+                                window.latestKeralaAddress = suggestion.address;
+                                suggestionsDropdown.innerHTML = '';
+                                suggestionsDropdown.classList.remove('active');
+                                console.log('Selected Address:', suggestion.address, 'Display Name:', suggestion.display_name, 'Is Kerala:', true);
+                            });
+                            suggestionsDropdown.appendChild(suggestionItem);
+                        });
+                        suggestionsDropdown.classList.add('active');
                     } else {
-                      document.querySelector('.address').textContent = 'Location not in Kerala';
-                      window.latestKeralaAddress = null;
+                        suggestionsDropdown.classList.remove('active');
                     }
-                  })
-                  .catch(() => {
-                    document.querySelector('.address').textContent = 'Location not in Kerala';
-                    window.latestKeralaAddress = null;
-                  });
-              }
+                });
             });
 
-            // Confirm Location button: only works if location is in Kerala
+            // Clear suggestions when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!searchInput.contains(e.target) && !suggestionsDropdown.contains(e.target)) {
+                    suggestionsDropdown.innerHTML = '';
+                    suggestionsDropdown.classList.remove('active');
+                }
+            });
+
+            // Handle Enter key for search
+            searchInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    let query = searchInput.value.trim();
+                    if (!query) return;
+                    if (!/kerala/i.test(query)) {
+                        query += ', Kerala, India';
+                    }
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1&accept-language=en`)
+                        .then((res) => res.json())
+                        .then((results) => {
+                            if (results && results.length > 0) {
+                                const result = results[0];
+                                const lat = parseFloat(result.lat);
+                                const lon = parseFloat(result.lon);
+                                if (isKeralaLocation(result.address, result.display_name, lat, lon)) {
+                                    map.setView([lat, lon], 15);
+                                    marker.setLatLng([lat, lon]);
+                                    const addr = formatShortAddress(result.address, result.display_name, lat, lon);
+                                    document.querySelector('.address').textContent = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
+                                    searchInput.value = addr;
+                                    window.latestKeralaAddress = result.address;
+                                    suggestionsDropdown.innerHTML = '';
+                                    suggestionsDropdown.classList.remove('active');
+                                    console.log('Search Address:', result.address, 'Display Name:', result.display_name, 'Is Kerala:', true);
+                                } else {
+                                    document.querySelector('.address').textContent = 'Location not in Kerala, reverting to Kozhikode';
+                                    map.setView([defaultLocation.lat, defaultLocation.lng], 13);
+                                    marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
+                                    window.latestKeralaAddress = null;
+                                    suggestionsDropdown.innerHTML = '';
+                                    suggestionsDropdown.classList.remove('active');
+                                    console.log('Search Address:', result.address, 'Display Name:', result.display_name, 'Is Kerala:', false);
+                                }
+                            } else {
+                                document.querySelector('.address').textContent = 'Location not found, reverting to Kozhikode';
+                                map.setView([defaultLocation.lat, defaultLocation.lng], 13);
+                                marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
+                                window.latestKeralaAddress = null;
+                                suggestionsDropdown.innerHTML = '';
+                                suggestionsDropdown.classList.remove('active');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Search error:', error);
+                            document.querySelector('.address').textContent = 'Location not found, reverting to Kozhikode';
+                            map.setView([defaultLocation.lat, defaultLocation.lng], 13);
+                            marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
+                            window.latestKeralaAddress = null;
+                            suggestionsDropdown.innerHTML = '';
+                            suggestionsDropdown.classList.remove('active');
+                        });
+                }
+            });
+
+            // Confirm Location button
             const confirmBtn = document.querySelector('.btn-confirm');
             if (confirmBtn) {
-              confirmBtn.addEventListener('click', function() {
-                // Only allow if latestKeralaAddress is set and in Kerala
-                const addressDiv = document.querySelector('.address');
-                let isKerala = false;
-                if (window.latestKeralaAddress) {
-                  const addr = window.latestKeralaAddress;
-                  // Check all address fields for the word 'kerala' (case-insensitive)
-                  for (const key in addr) {
-                    if (typeof addr[key] === 'string' && /kerala/i.test(addr[key])) {
-                      isKerala = true;
-                      break;
+                confirmBtn.addEventListener('click', function () {
+                    const currentLatLng = marker.getLatLng();
+                    if (window.latestKeralaAddress && isKeralaLocation(window.latestKeralaAddress, document.querySelector('.address').textContent, currentLatLng.lat, currentLatLng.lng)) {
+                        console.log('Confirming location in Kerala:', window.latestKeralaAddress);
+                        window.location.href = 'nearby_driving_school.html';
+                    } else {
+                        document.querySelector('.address').textContent = 'Please select a location within Kerala to continue.';
+                        map.setView([defaultLocation.lat, defaultLocation.lng], 13);
+                        marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
+                        window.latestKeralaAddress = null;
+                        console.log('Location not in Kerala or not set:', window.latestKeralaAddress);
                     }
-                  }
-                }
-                if (isKerala) {
-                  window.location.href = 'nearby_driving_school.html';
-                } else if (addressDiv) {
-                  addressDiv.textContent = 'Please select a location within Kerala to continue.';
-                }
-              });
+                });
             }
-
-        // Helper to format a short address from OSM address object
-        function formatShortAddress(address, displayName, lat, lng) {
-          // If address is missing, use displayName or fallback to a readable default
-          if (!address) {
-            if (displayName && displayName.trim() !== '') return displayName;
-            // Fallback to Kozhikode, Kerala, India for this app
-            return 'Kozhikode, Kerala, India';
-          }
-          // Try to show road, suburb, city/town/village, state
-          let parts = [];
-          if (address.road) parts.push(address.road);
-          if (address.suburb) parts.push(address.suburb);
-          if (address.city) parts.push(address.city);
-          else if (address.town) parts.push(address.town);
-          else if (address.village) parts.push(address.village);
-          if (address.state) parts.push(address.state);
-          if (parts.length === 0 && address.county) parts.push(address.county);
-          if (parts.length === 0 && address.country) parts.push(address.country);
-          // If still nothing, fallback to displayName or readable default
-          return parts.join(', ') || (displayName && displayName.trim() !== '' ? displayName : 'Kozhikode, Kerala, India');
-        }
         });
-
-        // ...existing code...
     </script>
 </body>
 </html>
+```

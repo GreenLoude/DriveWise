@@ -1,4 +1,43 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -104,6 +143,49 @@
 
     button:hover {
       background-color: #3498db;
+    }
+
+    /* Day Selection Styling */
+    .day-selector {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .day-button {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .day-button.selected {
+      background-color: #e74c3c;
+      color: #fff;
+      border-color: #e74c3c;
+    }
+
+    .day-button:hover {
+      background-color: #f0f0f0;
+    }
+
+    .day-button.selected:hover {
+      background-color: #c0392b;
+    }
+
+    /* Image Styling */
+    .school-image {
+      max-width: 50px;
+      height: auto;
+      border-radius: 4px;
     }
 
     /* Table Styling */
@@ -253,11 +335,28 @@
         </div>
         <div class="form-group">
           <label>Location</label>
-          <input type="text" placeholder="Enter location" required>
+          <input type="text" id="school-location" placeholder="Enter location" required>
         </div>
         <div class="form-group">
-          <label>Contact Number</label>
-          <input type="tel" placeholder="Enter phone number" required>
+          <label>Price ($)</label>
+          <input type="number" id="school-price" placeholder="Enter price (e.g., 500)" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>Image of School (PNG)</label>
+          <input type="file" id="school-image" accept="image/png" required>
+        </div>
+        <div class="form-group">
+          <label>Unavailable Days</label>
+          <div class="day-selector" id="day-selector">
+            <div class="day-button" data-day="Monday">M</div>
+            <div class="day-button" data-day="Tuesday">T</div>
+            <div class="day-button" data-day="Wednesday">W</div>
+            <div class="day-button" data-day="Thursday">Th</div>
+            <div class="day-button" data-day="Friday">F</div>
+            <div class="day-button" data-day="Saturday">Sa</div>
+            <div class="day-button" data-day="Sunday">Su</div>
+          </div>
+          <input type="hidden" id="unavailable-days" name="unavailable-days">
         </div>
         <button type="submit">Add School</button>
       </form>
@@ -266,9 +365,11 @@
       <table id="schools-table">
         <thead>
           <tr>
+            <th>Image</th>
             <th>School Name</th>
             <th>Location</th>
-            <th>Contact</th>
+            <th>Price ($)</th>
+            <th>Unavailable Days</th>
             <th>Admissions</th>
           </tr>
         </thead>
@@ -306,16 +407,44 @@
 
   <script>
     // Mock data for schools and admissions
-    const schools = [
-      { name: "City Driving School", location: "New York", contact: "1234567890", admissions: 50 },
-      { name: "Highway Driving Academy", location: "Los Angeles", contact: "0987654321", admissions: 30 },
-      { name: "Safe Drive Institute", location: "Chicago", contact: "1122334455", admissions: 40 },
-    ];
+
+    // Initialize schools array if not present
+    let schools = [];
 
     const admissions = [
       { studentName: "John Doe", course: "Basic Driving", school: "City Driving School", date: "2025-07-01" },
       { studentName: "Jane Smith", course: "Advanced Driving", school: "Safe Drive Institute", date: "2025-07-02" },
     ];
+
+    // Handle day selection for unavailable days
+    const dayButtons = document.querySelectorAll('.day-button');
+    const unavailableDaysInput = document.getElementById('unavailable-days');
+    const schoolImageInput = document.getElementById('school-image');
+    const addSchoolForm = document.getElementById('add-school-form');
+
+    dayButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        button.classList.toggle('selected');
+        updateUnavailableDays();
+      });
+    });
+
+    function updateUnavailableDays() {
+      const selectedDays = Array.from(dayButtons)
+        .filter(button => button.classList.contains('selected'))
+        .map(button => button.dataset.day);
+      unavailableDaysInput.value = selectedDays.join(',');
+    }
+
+    // Convert image to Base64
+    function getBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
+    }
 
     // Populate schools table
     function populateSchoolsTable() {
@@ -324,14 +453,18 @@
         .map(
           (school) => `
           <tr>
+            <td>${school.image ? `<img src="${school.image}" class="school-image" alt="${school.name}">` : 'No Image'}</td>
             <td>${school.name}</td>
             <td>${school.location}</td>
-            <td>${school.contact}</td>
+            <td>$${school.price.toFixed(2)}</td>
+            <td>${school.unavailableDays || 'None'}</td>
             <td>${school.admissions}</td>
           </tr>
         `
         )
         .join("");
+      document.getElementById('total-schools').textContent = schools.length;
+      console.log('Schools table updated:', schools); // Debug log
     }
 
     // Populate admissions table
@@ -349,6 +482,7 @@
         `
         )
         .join("");
+      document.getElementById('total-admissions').textContent = admissions.length;
     }
 
     // Render Chart.js graph
@@ -389,6 +523,46 @@
       ];
       activitiesList.innerHTML = activities.map((activity) => `<li>${activity}</li>`).join("");
     }
+
+    // Handle form submission
+    addSchoolForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('school-name').value;
+      const location = document.getElementById('school-location').value;
+      const price = parseFloat(document.getElementById('school-price').value);
+      const unavailableDays = document.getElementById('unavailable-days').value;
+      const imageFile = schoolImageInput.files[0];
+      let imageBase64 = null;
+
+      if (imageFile) {
+        try {
+          imageBase64 = await getBase64(imageFile);
+        } catch (error) {
+          console.error('Error processing image:', error);
+          alert('Error processing image. Please try again.');
+          return;
+        }
+      }
+
+      const newSchool = {
+        name,
+        location,
+        price,
+        image: imageBase64,
+        unavailableDays: unavailableDays || 'None',
+        admissions: 0
+      };
+
+      schools.push(newSchool);
+      console.log('New school added:', newSchool); // Debug log
+      populateSchoolsTable();
+      populateRecentActivities();
+      renderAdmissionsChart();
+      addSchoolForm.reset();
+      dayButtons.forEach(button => button.classList.remove('selected'));
+      unavailableDaysInput.value = '';
+      schoolImageInput.value = '';
+    });
 
     // Export admissions to Excel
     document.getElementById("export-excel").addEventListener("click", () => {
