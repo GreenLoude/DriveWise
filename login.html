@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });z
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -45,14 +6,13 @@
     <title>DriveWise - Log In</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Base Styles */
+        /* Your existing CSS remains unchanged */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
@@ -64,21 +24,16 @@
             --border: #cbd5e1;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-
         body {
             background-color: #f1f5f9;
             color: var(--dark);
             line-height: 1.6;
         }
-
-        /* Website Layout */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-
-        /* Header */
         header {
             background: white;
             padding: 15px 0;
@@ -87,7 +42,6 @@
             top: 0;
             z-index: 100;
         }
-
         .header-content {
             display: flex;
             justify-content: space-between;
@@ -96,7 +50,6 @@
             margin: 0 auto;
             padding: 0 20px;
         }
-
         .logo {
             display: flex;
             align-items: center;
@@ -106,7 +59,6 @@
             color: var(--primary);
             text-decoration: none;
         }
-
         .logo i {
             background: var(--primary);
             color: white;
@@ -117,29 +69,24 @@
             justify-content: center;
             border-radius: 10px;
         }
-
         nav ul {
             display: flex;
             list-style: none;
             gap: 25px;
         }
-
         nav a {
             text-decoration: none;
             color: var(--dark);
             font-weight: 500;
             transition: color 0.3s;
         }
-
         nav a:hover {
             color: var(--primary);
         }
-
         .auth-buttons {
             display: flex;
             gap: 15px;
         }
-
         .btn {
             padding: 10px 20px;
             border: none;
@@ -152,33 +99,26 @@
             text-decoration: none;
             display: inline-block;
         }
-
         .btn-outline {
             background: transparent;
             border: 1px solid var(--border);
             color: var(--dark);
         }
-
         .btn-outline:hover {
             background: var(--light-gray);
         }
-
         .btn-primary {
             background: var(--primary);
             color: white;
         }
-
         .btn-primary:hover {
             background: var(--primary-dark);
         }
-
-        /* Log In Section */
         .login-section {
             padding: 80px 0;
             background: white;
             text-align: center;
         }
-
         .login-content {
             max-width: 500px;
             margin: 0 auto;
@@ -187,37 +127,31 @@
             border-radius: 15px;
             box-shadow: var(--shadow);
         }
-
         .login-content h2 {
             font-size: 2.2rem;
             margin-bottom: 20px;
             color: var(--dark);
         }
-
         .login-content p {
             color: var(--gray);
             font-size: 1.1rem;
             margin-bottom: 30px;
         }
-
         .login-form {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-
         .form-group {
             display: flex;
             flex-direction: column;
             text-align: left;
         }
-
         .form-group label {
             font-weight: 600;
             margin-bottom: 8px;
             color: var(--dark);
         }
-
         .form-group input {
             padding: 12px;
             border: 1px solid var(--border);
@@ -225,34 +159,28 @@
             font-size: 1rem;
             color: var(--dark);
         }
-
         .form-group input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
-
-        /* Footer */
         footer {
             background: var(--dark);
             color: white;
             padding: 60px 0 30px;
         }
-
         .footer-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 40px;
             margin-bottom: 40px;
         }
-
         .footer-column h3 {
             font-size: 1.2rem;
             margin-bottom: 20px;
             position: relative;
             padding-bottom: 10px;
         }
-
         .footer-column h3::after {
             content: '';
             position: absolute;
@@ -262,31 +190,25 @@
             height: 2px;
             background: var(--primary);
         }
-
         .footer-column ul {
             list-style: none;
         }
-
         .footer-column ul li {
             margin-bottom: 10px;
         }
-
         .footer-column a {
             color: #cbd5e1;
             text-decoration: none;
             transition: color 0.3s;
         }
-
         .footer-column a:hover {
             color: white;
         }
-
         .social-links {
             display: flex;
             gap: 15px;
             margin-top: 20px;
         }
-
         .social-links a {
             display: flex;
             align-items: center;
@@ -298,12 +220,10 @@
             color: white;
             transition: all 0.3s;
         }
-
         .social-links a:hover {
             background: var(--primary);
             transform: translateY(-3px);
         }
-
         .copyright {
             text-align: center;
             padding-top: 30px;
@@ -311,19 +231,15 @@
             color: #94a3b8;
             font-size: 0.9rem;
         }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
                 gap: 20px;
             }
-            
             nav ul {
                 flex-wrap: wrap;
                 justify-content: center;
             }
-            
             .login-content {
                 padding: 20px;
             }
@@ -334,11 +250,11 @@
     <!-- Header -->
     <header>
         <div class="header-content">
-            <div class="logo">
-             <a href="index (1).html" class="logo">
+            <a href="index.html" class="logo">
                 <i class="fas fa-car"></i>
-             <span>DriveWise</span></a> 
-            </div>
+                <span>DriveWise</span>
+            </a>
+        </div>
     </header>
     
     <!-- Log In Section -->
@@ -357,8 +273,8 @@
                         <input type="password" id="password" placeholder="Enter your password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Log In</button>
-                    <p>Don't have an account? <a href="signup.html" class="link">Sign Up</a></p>
                     <span id="login-error" style="color: #e11d48; font-size: 0.95em; display: none; margin-top: 10px;"></span>
+                    <p>Don't have an account? <a href="signup.html" class="link">Sign Up</a></p>
                 </form>
             </div>
         </div>
@@ -381,7 +297,6 @@
                         <a href="#"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
-                
                 <div class="footer-column">
                     <h3>Quick Links</h3>
                     <ul>
@@ -392,7 +307,6 @@
                         <li><a href="index.html#testimonials">Testimonials</a></li>
                     </ul>
                 </div>
-                
                 <div class="footer-column">
                     <h3>Resources</h3>
                     <ul>
@@ -403,7 +317,6 @@
                         <li><a href="#">Blog</a></li>
                     </ul>
                 </div>
-                
                 <div class="footer-column">
                     <h3>Contact Us</h3>
                     <ul>
@@ -414,46 +327,53 @@
                     </ul>
                 </div>
             </div>
-            
             <div class="copyright">
                 <p>© 2023 DriveWise. All rights reserved.</p>
             </div>
         </div>
     </footer>
-    <!-- Supabase JS Library and Login Script -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <script>
-      // Replace with your actual Supabase project URL and anon/public API key
-      const supabaseUrl = 'https://vonfudgrqkbjzxjsuifw.supabase.co';
-      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvbmZ1ZGdycWtianp4anN1aWZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4NjMzMTYsImV4cCI6MjA2NzQzOTMxNn0.lDn03c30wiBDJH4J7KX_SFOJ2WacDpczz64gmGfGsug';
-      const sb = window.supabase && window.supabase.createClient ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
 
-      document.querySelector('.login-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const loginError = document.getElementById('login-error');
-        if (!sb) {
-          loginError.textContent = 'Supabase client failed to initialize.';
-          loginError.style.display = 'block';
-          return;
-        }
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        loginError.style.display = 'none';
-        loginError.textContent = '';
-        const { data, error } = await sb.auth.signInWithPassword({ email, password });
-        if (error) {
-          // Show a specific error for invalid credentials, otherwise show a generic error
-          if (error.message && (error.message.toLowerCase().includes('invalid login credentials') || error.message.toLowerCase().includes('invalid email or password'))) {
-            loginError.textContent = 'Invalid email or password. Please try again.';
-          } else {
-            loginError.textContent = 'Login failed. ' + (error.message ? error.message : 'Please try again.');
-          }
-          loginError.style.display = 'block';
-        } else {
-          // Redirect to home page after successful login
-          window.location.href = 'home_after_login.html';
-        }
-      });
+    <!-- Supabase JS Library and Login Script -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
+
+        // Initialize Supabase client
+        const supabaseUrl = 'https://mjgqtckdqmclmlkrphsv.supabase.co'; // Corrected URL
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qZ3F0Y2tkcW1jbG1sa3JwaHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1NzQxMDMsImV4cCI6MjA2ODE1MDEwM30.h7_XTLfibCl6_ZTbilR5jBXKdGqAaFRoLtLnPLEyJgQ';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Handle form submission
+        document.querySelector('.login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const loginError = document.getElementById('login-error');
+            loginError.style.display = 'none';
+            loginError.textContent = '';
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+                if (error) {
+                    console.error('Login error:', error);
+                    if (error.message.includes('Email not confirmed')) {
+                        loginError.textContent = 'Please confirm your email before logging in.';
+                    } else if (error.message.includes('Invalid login credentials')) {
+                        loginError.textContent = 'Invalid email or password. Please try again.';
+                    } else {
+                        loginError.textContent = `Login failed: ${error.message}`;
+                    }
+                    loginError.style.display = 'block';
+                    return;
+                }
+                window.location.href = 'home_after_login.html';
+            } catch (err) {
+                console.error('Unexpected error:', err);
+                loginError.textContent = 'Login failed: Unable to connect to the server. Please check your network or try again later.';
+                loginError.style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>

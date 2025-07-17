@@ -6,6 +6,7 @@
     <title>DriveSmart - All Driving Schools</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm" type="module"></script>
     <style>
         * {
             margin: 0;
@@ -451,16 +452,16 @@
                 <i class="fas fa-car"></i>
                 <span>DriveSmart</span>
             </div>
-        <div class="header-right">
-            <nav>
-                
-                <ul>
-                    <li><a href="home_after_login.html"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="#"><i class="fas fa-phone-alt"></i> Contact</a></li>
-                </ul>
-            </nav>
-            <div class="user-profile">
-                <i class="fas fa-user-circle"></i>
+            <div class="header-right">
+                <nav>
+                    <ul>
+                        <li><a href="home_after_login.html"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#"><i class="fas fa-phone-alt"></i> Contact</a></li>
+                    </ul>
+                </nav>
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                </div>
             </div>
         </div>
     </header>
@@ -492,198 +493,8 @@
             <h2>All Driving Schools</h2>
         </div>
         
-        <div class="schools-grid">
-            <!-- School Card 1 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Pro Drive Academy</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="rating-value">4.8</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 2.3 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥2,500/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Today</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Today at 2 PM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- School Card 2 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Master Drivers School</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <div class="rating-value">4.5</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 3.1 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥2,800/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Tomorrow</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Tomorrow at 10 AM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- School Card 3 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Elite Driving Institute</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="rating-value">4.7</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 4.2 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥3,200/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Today</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Today at 4 PM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- School Card 4 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>City Road Masters</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <div class="rating-value">4.6</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 5.0 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥2,700/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Today</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Today at 3 PM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- School Card 5 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Safe Wheels Academy</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="rating-value">4.9</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 6.1 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥3,000/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Tomorrow</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Tomorrow at 9 AM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- School Card 6 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Urban Drive School</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <div class="rating-value">4.4</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 7.5 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥2,600/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Today</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Today at 5 PM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
+        <div class="schools-grid" id="schools-grid">
+            <!-- Dynamic school cards will be added here -->
         </div>
     </div>
 
@@ -704,9 +515,7 @@
             <div class="footer-column">
                 <h3>Quick Links</h3>
                 <ul class="footer-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="schools.html">Find Schools</a></li>
-                    <li><a href="#">Pricing</a></li>
+                    <li><a href="home_after_login.html">Home</a></li>
                     <li><a href="#">Instructors</a></li>
                 </ul>
             </div>
@@ -737,54 +546,157 @@
         </div>
     </footer>
 
-    <script>
-        // Add animation to school cards on hover
-        const schoolCards = document.querySelectorAll('.school-card');
-        schoolCards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.transform = 'translateY(-10px)';
-            });
-            
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateY(0)';
-            });
-        });
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
 
-        // Page transition handling
-        document.querySelectorAll('a[href="index.html"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.body.style.opacity = '0';
-                setTimeout(() => {
-                    window.location.href = this.getAttribute('href');
-                }, 300);
-            });
-        });
+        // Initialize Supabase client
+        const supabaseUrl = 'https://mjgqtckdqmclmlkrphsv.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qZ3F0Y2tkcW1jbG1sa3JwaHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1NzQxMDMsImV4cCI6MjA2ODE1MDEwM30.h7_XTLfibCl6_ZTbilR5jBXKdGqAaFRoLtLnPLEyJgQ';
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
-        // Apply transition on page load
-        window.addEventListener('load', () => {
-            document.body.classList.add('page-transition');
-            document.body.style.opacity = '1';
-        });
-
-        // Profile menu toggle
-        const profileIcon = document.querySelector('.user-profile');
-        const profileMenu = document.querySelector('.profile-menu');
-        const closeMenuBtn = document.querySelector('.close-menu');
-
-        profileIcon.addEventListener('click', () => {
-            profileMenu.classList.toggle('active');
-        });
-
-        closeMenuBtn.addEventListener('click', () => {
-            profileMenu.classList.remove('active');
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!profileMenu.contains(e.target) && !profileIcon.contains(e.target)) {
-                profileMenu.classList.remove('active');
+        // Fetch schools from Supabase
+        async function fetchSchools() {
+            try {
+                const { data, error } = await supabase
+                    .from('schools')
+                    .select('*');
+                if (error) {
+                    console.error('Error fetching schools:', error);
+                    return [];
+                }
+                console.log('Fetched schools:', data);
+                return data || [];
+            } catch (err) {
+                console.error('Unexpected error in fetchSchools:', err);
+                return [];
             }
+        }
+
+        // Helper function to determine availability
+        function getAvailability(unavailableDays) {
+            const days = unavailableDays ? unavailableDays.split(',') : [];
+            const today = new Date().toLocaleString('en-US', { weekday: 'long' });
+            return days.includes(today) ? 'Available Tomorrow' : 'Available Today';
+        }
+
+        // Helper function to get next session time
+        function getNextSessionTime(unavailableDays) {
+            const days = unavailableDays ? unavailableDays.split(',') : [];
+            const today = new Date().toLocaleString('en-US', { weekday: 'long' });
+            if (days.includes(today)) {
+                return 'Tomorrow at 10 AM';
+            }
+            const now = new Date();
+            const hours = now.getHours();
+            const nextHour = hours < 17 ? hours + 1 : 9; // Next hour or 9 AM tomorrow
+            const period = hours < 11 ? 'AM' : 'PM';
+            const displayHour = nextHour > 12 ? nextHour - 12 : nextHour;
+            return `Today at ${displayHour} ${period}`;
+        }
+
+        // Populate schools section
+        async function populateSchools() {
+            const schools = await fetchSchools();
+            const schoolsGrid = document.getElementById('schools-grid');
+
+            // Mock ratings and distances (reused from static cards)
+            const mockRatings = [4.8, 4.5, 4.7, 4.6, 4.9, 4.4];
+            const mockDistances = [2.3, 3.1, 4.2, 5.0, 6.1, 7.5];
+
+            // Generate dynamic school cards
+            schoolsGrid.innerHTML = schools.map((school, index) => {
+                const rating = mockRatings[index % mockRatings.length];
+                const stars = Math.floor(rating);
+                const hasHalfStar = rating % 1 >= 0.5;
+                const distance = mockDistances[index % mockDistances.length];
+                const availability = getAvailability(school.unavailable_days);
+                const nextSession = getNextSessionTime(school.unavailable_days);
+                return `
+                    <div class="school-card">
+                        <div class="card-header">
+                            <h3>${school.name}</h3>
+                            <p style="font-size: 0.9rem; color: var(--gray);">${school.location}</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    ${'<i class="fas fa-star"></i>'.repeat(stars)}
+                                    ${hasHalfStar ? '<i class="fas fa-star-half-alt"></i>' : ''}
+                                    ${'<i class="far fa-star"></i>'.repeat(5 - stars - (hasHalfStar ? 1 : 0))}
+                                </div>
+                                <div class="rating-value">${rating}</div>
+                            </div>
+                            <div class="card-details">
+                                <div class="distance">
+                                    <i class="fas fa-location-dot"></i> ${distance} km
+                                </div>
+                                <div class="price">
+                                    <i class="fas fa-tag"></i> ₹${school.price.toFixed(2)}/session
+                                </div>
+                            </div>
+                            <span class="availability">${availability}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="next-session">
+                                <span>Next: ${nextSession}</span>
+                                <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Display message if no schools are found
+            if (schools.length === 0) {
+                schoolsGrid.innerHTML = '<p style="text-align: center; color: var(--gray);">No driving schools found.</p>';
+            }
+        }
+
+        // Initialize functionality on DOMContentLoaded
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Populate schools from Supabase
+            await populateSchools();
+
+            // Add animation to school cards on hover
+            const schoolCards = document.querySelectorAll('.school-card');
+            schoolCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-10px)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Page transition handling
+            document.querySelectorAll('a[href="home_after_login.html"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.body.style.opacity = '0';
+                    setTimeout(() => {
+                        window.location.href = this.getAttribute('href');
+                    }, 300);
+                });
+            });
+
+            // Profile menu toggle
+            const profileIcon = document.querySelector('.user-profile');
+            const profileMenu = document.querySelector('.profile-menu');
+            const closeMenuBtn = document.querySelector('.close-menu');
+
+            profileIcon.addEventListener('click', () => {
+                profileMenu.classList.toggle('active');
+            });
+
+            closeMenuBtn.addEventListener('click', () => {
+                profileMenu.classList.remove('active');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!profileMenu.contains(e.target) && !profileIcon.contains(e.target)) {
+                    profileMenu.classList.remove('active');
+                }
+            });
         });
     </script>
 </body>
