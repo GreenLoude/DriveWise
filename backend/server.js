@@ -14,7 +14,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 // Endpoint to add a new school
 app.post('/api/add-school', async (req, res) => {
   try {
-    const { name, location, price, unavailable_days, image, is_top } = req.body;
+    const { name, location, price, unavailable_days, image, is_top, is_featured } = req.body;
 
     // Validate required fields
     if (!name || !location || !price) {
@@ -22,6 +22,9 @@ app.post('/api/add-school', async (req, res) => {
     }
     if (typeof is_top !== 'boolean') {
       return res.status(400).json({ error: 'is_top must be a boolean' });
+    }
+    if (typeof is_featured !== 'boolean') {
+      return res.status(400).json({ error: 'is_featured must be a boolean' });
     }
 
     let imageUrl = null;
@@ -57,6 +60,7 @@ app.post('/api/add-school', async (req, res) => {
           image_url: imageUrl,
           admissions: 0,
           is_top,
+          is_featured,
         },
       ])
       .select();
@@ -86,6 +90,38 @@ app.patch('/api/toggle-top-school/:id', async (req, res) => {
     const { data, error } = await supabase
       .from('schools')
       .update({ is_top })
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.error('Database error:', error);
+      return res.status(500).json({ error: 'Failed to update school' });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: 'School not found' });
+    }
+
+    res.status(200).json({ message: 'School updated successfully', school: data[0] });
+  } catch (err) {
+    console.error('Unexpected error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Endpoint to toggle is_featured status
+app.patch('/api/toggle-featured-school/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { is_featured } = req.body;
+
+    if (typeof is_featured !== 'boolean') {
+      return res.status(400).json({ error: 'is_featured must be a boolean' });
+    }
+
+    const { data, error } = await supabase
+      .from('schools')
+      .update({ is_featured })
       .eq('id', id)
       .select();
 
