@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +6,8 @@
     <title>DriveSmart - Find Driving Schools Near You</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Leaflet.js CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm" type="module"></script>
     <style>
         * {
             margin: 0;
@@ -42,14 +41,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .container {
@@ -68,11 +61,6 @@
             left: 0;
             width: 100%;
             z-index: 100;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        header.hidden {
-            transform: translateY(-100%);
         }
 
         .header-content {
@@ -217,7 +205,7 @@
         }
 
         .hero {
-            background: linear-gradient(rgba(37, 99, 235, 0.9), rgba(37, 99, 235, 0.8)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background: linear-gradient(rgba(37, 99, 235, 0.9), rgba(37, 99, 235, 0.8)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
             background-size: cover;
             background-position: center;
             padding: 80px 20px;
@@ -338,6 +326,10 @@
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 25px;
             margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
         }
 
         .school-card {
@@ -472,6 +464,9 @@
             overflow: hidden;
             transition: max-height 0.5s ease-in-out;
             margin-bottom: 0;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
         }
 
         .dropdown-schools.active {
@@ -689,19 +684,19 @@
                 flex-direction: column;
                 gap: 10px;
             }
-            
+
             nav ul {
                 margin-top: 15px;
             }
-            
+
             .location-content {
                 flex-direction: column;
             }
-            
+
             .hero h1 {
                 font-size: 2.2rem;
             }
-            
+
             .schools-grid {
                 grid-template-columns: 1fr;
             }
@@ -725,7 +720,7 @@
                 <nav>
                     <ul>
                         <li><a href="home_after_login.html"><i class="fas fa-home"></i> Home</a></li>
-                        <li><a href="FInd_Schools.html"><i class="fas fa-search-location"></i> Schools</a></li>
+                        <li><a href="Find_Schools.html"><i class="fas fa-search-location"></i> Schools</a></li>
                         <li><a href="#"><i class="fas fa-phone-alt"></i> Contact</a></li>
                     </ul>
                 </nav>
@@ -775,223 +770,35 @@
         <div class="section-title">
             <h2>Top Driving Schools Near You</h2>
         </div>
-        
+
         <div class="view-toggle">
             <div class="toggle-btn active">List</div>
         </div>
-        
-        <div class="schools-grid">
-            <!-- School Card 1 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Pro Drive Academy</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="rating-value">4.8</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 2.3 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥2,500/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Today</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Today at 2 PM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- School Card 2 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Master Drivers School</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <div class="rating-value">4.5</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 3.1 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥2,800/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Tomorrow</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Tomorrow at 10 AM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- School Card 3 -->
-            <div class="school-card">
-                <div class="card-header">
-                    <h3>Elite Driving Institute</h3>
-                    <div class="rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="rating-value">4.7</div>
-                    </div>
-                    <div class="card-details">
-                        <div class="distance">
-                            <i class="fas fa-location-dot"></i> 4.2 km
-                        </div>
-                        <div class="price">
-                            <i class="fas fa-tag"></i> ¥3,200/session
-                        </div>
-                    </div>
-                    <span class="availability">Available Today</span>
-                </div>
-                <div class="card-body">
-                    <div class="next-session">
-                        <span>Next: Today at 4 PM</span>
-                        <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
+
+        <div class="schools-grid" id="top-schools-grid">
+            <p style="text-align: center; color: var(--gray); width: 100%;">Loading top schools...</p>
         </div>
 
         <!-- Dropdown for More Schools -->
         <div class="dropdown-schools" id="dropdown-schools">
-            <div class="schools-grid">
-                <!-- Additional School Card 1 -->
-                <div class="school-card">
-                    <div class="card-header">
-                        <h3>City Road Masters</h3>
-                        <div class="rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
-                            <div class="rating-value">4.6</div>
-                        </div>
-                        <div class="card-details">
-                            <div class="distance">
-                                <i class="fas fa-location-dot"></i> 5.0 km
-                            </div>
-                            <div class="price">
-                                <i class="fas fa-tag"></i> ¥2,700/session
-                            </div>
-                        </div>
-                        <span class="availability">Available Today</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="next-session">
-                            <span>Next: Today at 3 PM</span>
-                            <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Additional School Card 2 -->
-                <div class="school-card">
-                    <div class="card-header">
-                        <h3>Safe Wheels Academy</h3>
-                        <div class="rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="rating-value">4.9</div>
-                        </div>
-                        <div class="card-details">
-                            <div class="distance">
-                                <i class="fas fa-location-dot"></i> 6.1 km
-                            </div>
-                            <div class="price">
-                                <i class="fas fa-tag"></i> ¥3,000/session
-                            </div>
-                        </div>
-                        <span class="availability">Available Tomorrow</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="next-session">
-                            <span>Next: Tomorrow at 9 AM</span>
-                            <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Additional School Card 3 -->
-                <div class="school-card">
-                    <div class="card-header">
-                        <h3>Urban Drive School</h3>
-                        <div class="rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
-                            <div class="rating-value">4.4</div>
-                        </div>
-                        <div class="card-details">
-                            <div class="distance">
-                                <i class="fas fa-location-dot"></i> 7.5 km
-                            </div>
-                            <div class="price">
-                                <i class="fas fa-tag"></i> ¥2,600/session
-                            </div>
-                        </div>
-                        <span class="availability">Available Today</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="next-session">
-                            <span>Next: Today at 5 PM</span>
-                            <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
+            <div class="schools-grid" id="more-top-schools-grid">
+                <!-- Additional dynamic top school cards -->
             </div>
         </div>
         <button class="continue-btn" id="more-schools-btn">More <i class="fas fa-chevron-down"></i></button>
-        
+
         <!-- Location Section -->
         <div class="section-title">
             <h2>Search by location</h2>
         </div>
-        
+
         <div class="location-section">
             <div class="location-content">
                 <div class="location-form">
                     <div class="current-location">
                         <h3>Current Location</h3>
                         <div id="map"></div>
-                        <div class="address">123 Main Street, Downtown Area, City Name, State 12345</div>
+                        <div class="address">Kozhikode, Kerala, India</div>
                         <div class="location-search">
                             <input type="text" placeholder="Search for address or location">
                             <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
@@ -1020,17 +827,17 @@
                     <a href="#"><i class="fab fa-linkedin-in"></i></a>
                 </div>
             </div>
-            
+
             <div class="footer-column">
                 <h3>Quick Links</h3>
                 <ul class="footer-links">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Schools</a></li>
+                    <li><a href="home_after_login.html">Home</a></li>
+                    <li><a href="Find_Schools.html">Schools</a></li>
                     <li><a href="#">Pricing</a></li>
                     <li><a href="#">Instructors</a></li>
                 </ul>
             </div>
-            
+
             <div class="footer-column">
                 <h3>Resources</h3>
                 <ul class="footer-links">
@@ -1041,7 +848,7 @@
                     <li><a href="#">Blog</a></li>
                 </ul>
             </div>
-            
+
             <div class="footer-column">
                 <h3>Contact Us</h3>
                 <ul class="footer-links">
@@ -1051,19 +858,135 @@
                 </ul>
             </div>
         </div>
-        
+
         <div class="copyright">
-            © 2023 DriveSmart. All rights reserved.
+            © 2025 DriveSmart. All rights reserved.
         </div>
     </footer>
 
     <!-- Leaflet.js -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script>
-        // LEAFLET MAP SETUP
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
+
+        // Initialize Supabase client
+        const supabaseUrl = 'https://mjgqtckdqmclmlkrphsv.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qZ3F0Y2tkcW1jbG1sa3JwaHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1NzQxMDMsImV4cCI6MjA2ODE1MDEwM30.h7_XTLfibCl6_ZTbilR5jBXKdGqAaFRoLtLnPLEyJgQ';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Fetch top schools
+        async function fetchTopSchools() {
+            try {
+                const { data, error } = await supabase
+                    .from('schools')
+                    .select('*')
+                    .eq('is_top', true);
+                if (error) {
+                    console.error('Error fetching top schools:', error);
+                    return [];
+                }
+                return data || [];
+            } catch (err) {
+                console.error('Unexpected error in fetchTopSchools:', err);
+                return [];
+            }
+        }
+
+        // Helper functions (consistent with Find_Schools.html)
+        function getAvailability(unavailableDays) {
+            const days = unavailableDays ? unavailableDays.split(',') : [];
+            const today = new Date().toLocaleString('en-US', { weekday: 'long' });
+            return days.includes(today) ? 'Available Tomorrow' : 'Available Today';
+        }
+
+        function getNextSessionTime(unavailableDays) {
+            const days = unavailableDays ? unavailableDays.split(',') : [];
+            const today = new Date().toLocaleString('en-US', { weekday: 'long' });
+            if (days.includes(today)) {
+                return 'Tomorrow at 10 AM';
+            }
+            const now = new Date();
+            const hours = now.getHours();
+            const nextHour = hours < 17 ? hours + 1 : 9;
+            const period = nextHour < 12 ? 'AM' : 'PM';
+            const displayHour = nextHour > 12 ? nextHour - 12 : nextHour;
+            return `Today at ${displayHour} ${period}`;
+        }
+
+        // Populate top schools
+        async function populateTopSchools() {
+            const schools = await fetchTopSchools();
+            const topSchoolsGrid = document.getElementById('top-schools-grid');
+            const moreTopSchoolsGrid = document.getElementById('more-top-schools-grid');
+            const moreBtn = document.getElementById('more-schools-btn');
+
+            // Mock data for consistency
+            const mockRatings = [4.8, 4.5, 4.7, 4.6, 4.9, 4.4];
+            const mockDistances = [2.3, 3.1, 4.2, 5.0, 6.1, 7.5];
+
+            // Generate school cards
+            const generateSchoolCards = (schools, startIndex, limit) => {
+                return schools.slice(startIndex, startIndex + limit).map((school, index) => {
+                    const rating = mockRatings[(startIndex + index) % mockRatings.length];
+                    const stars = Math.floor(rating);
+                    const hasHalfStar = rating % 1 >= 0.5;
+                    const distance = mockDistances[(startIndex + index) % mockDistances.length];
+                    const availability = getAvailability(school.unavailable_days);
+                    const nextSession = getNextSessionTime(school.unavailable_days);
+                    return `
+                        <div class="school-card">
+                            <div class="card-header">
+                                <h3>${school.name}</h3>
+                                <p style="font-size: 0.9rem; color: var(--gray);">${school.location}</p>
+                                <div class="rating">
+                                    <div class="stars">
+                                        ${'<i class="fas fa-star"></i>'.repeat(stars)}
+                                        ${hasHalfStar ? '<i class="fas fa-star-half-alt"></i>' : ''}
+                                        ${'<i class="far fa-star"></i>'.repeat(5 - stars - (hasHalfStar ? 1 : 0))}
+                                    </div>
+                                    <div class="rating-value">${rating}</div>
+                                </div>
+                                <div class="card-details">
+                                    <div class="distance">
+                                        <i class="fas fa-location-dot"></i> ${distance} km
+                                    </div>
+                                    <div class="price">
+                                        <i class="fas fa-tag"></i> ₹${school.price.toFixed(2)}/session
+                                    </div>
+                                </div>
+                                <span class="availability">${availability}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="next-session">
+                                    <span>Next: ${nextSession}</span>
+                                    <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            // Populate grids
+            topSchoolsGrid.innerHTML = schools.length > 0
+                ? generateSchoolCards(schools, 0, 3)
+                : '<p style="text-align: center; color: var(--gray); width: 100%;">No top driving schools available. Check out all schools!</p>';
+            moreTopSchoolsGrid.innerHTML = schools.length > 3 ? generateSchoolCards(schools, 3, schools.length) : '';
+            moreBtn.style.display = schools.length > 3 ? 'block' : 'none';
+        }
+
+        // Toggle dropdown
+        document.getElementById('more-schools-btn').addEventListener('click', () => {
+            const dropdown = document.getElementById('dropdown-schools');
+            const btn = document.getElementById('more-schools-btn');
+            dropdown.classList.toggle('active');
+            btn.classList.toggle('active');
+        });
+
+        // Map setup
         let map, marker;
-        const keralaBounds = [[8.0, 74.8], [12.8, 77.4]]; // Kerala's lat/lng bounds
-        const defaultLocation = { lat: 11.2588, lng: 75.7804 }; // Kozhikode, Kerala
+        const keralaBounds = [[8.0, 74.8], [12.8, 77.4]];
+        const defaultLocation = { lat: 11.2588, lng: 75.7804 };
 
         function initMap(lat = defaultLocation.lat, lng = defaultLocation.lng) {
             map = L.map('map', {
@@ -1079,13 +1002,11 @@
 
             marker = L.marker([lat, lng], { draggable: true }).addTo(map);
 
-            // Restrict marker dragging to Kerala bounds
             marker.on('dragend', function (e) {
                 const pos = marker.getLatLng();
                 let newLat = pos.lat;
                 let newLng = pos.lng;
 
-                // Snap marker back to Kerala bounds if outside
                 if (pos.lat < keralaBounds[0][0]) newLat = keralaBounds[0][0];
                 if (pos.lat > keralaBounds[1][0]) newLat = keralaBounds[1][0];
                 if (pos.lng < keralaBounds[0][1]) newLng = keralaBounds[0][1];
@@ -1096,47 +1017,21 @@
                     map.setView([newLat, newLng], map.getZoom());
                 }
 
-                // Update address
                 fetch(`https://nominatim.openstreetmap.org/reverse?lat=${newLat}&lon=${newLng}&format=json&addressdetails=1&accept-language=en`)
                     .then((res) => res.json())
                     .then((data) => {
                         const addr = formatShortAddress(data.address, data.display_name, newLat, newLng);
-                        document.querySelector('.address').textContent = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
-                        window.latestKeralaAddress = isKeralaLocation(data.address, data.display_name, newLat, newLng) ? data.address : null;
-                        console.log('Drag Address:', data.address, 'Display Name:', data.display_name, 'Is Kerala:', window.latestKeralaAddress !== null);
+                        document.querySelector('.address').textContent = addr || 'Kozhikode, Kerala, India';
                     })
                     .catch((error) => {
                         console.error('Drag error:', error);
                         document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
-                        window.latestKeralaAddress = null;
                     });
             });
         }
 
-        // Helper function to check if the location is in Kerala
-        function isKeralaLocation(address, displayName, lat, lng) {
-            // First check coordinates to ensure they are within Kerala bounds
-            if (!lat || !lng || lat < 8.0 || lat > 12.8 || lng < 74.8 || lng > 77.4) {
-                return false;
-            }
-            if (!address && !displayName) return true; // Within bounds, no address data
-            if (address) {
-                for (const key in address) {
-                    if (typeof address[key] === 'string' && /kerala/i.test(address[key])) return true;
-                }
-                if (address.state && /kerala/i.test(address.state)) return true;
-                if (address.state_district && /kerala/i.test(address.state_district)) return true;
-                if (address.county && /kerala/i.test(address.county)) return true;
-            }
-            if (displayName && /kerala/i.test(displayName)) return true;
-            return true; // Within Kerala's bounds
-        }
-
-        // Helper to format a short address from OSM address object
         function formatShortAddress(address, displayName, lat, lng) {
-            if (!address) {
-                return displayName && displayName.trim() !== '' ? displayName : 'Kozhikode, Kerala, India';
-            }
+            if (!address) return displayName || 'Kozhikode, Kerala, India';
             let parts = [];
             if (address.road) parts.push(address.road);
             if (address.suburb) parts.push(address.suburb);
@@ -1144,286 +1039,21 @@
             else if (address.town) parts.push(address.town);
             else if (address.village) parts.push(address.village);
             if (address.state) parts.push(address.state);
-            if (parts.length === 0 && address.county) parts.push(address.county);
-            if (parts.length === 0 && address.country) parts.push(address.country);
-            return parts.join(', ') || (displayName && displayName.trim() !== '' ? displayName : 'Kozhikode, Kerala, India');
+            return parts.join(', ') || displayName || 'Kozhikode, Kerala, India';
         }
 
-        // Debounce function to limit API calls
-        function debounce(func, wait) {
-            let timeout;
-            return function (...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
-            };
-        }
-
-        // Fetch place suggestions
-        const fetchSuggestions = debounce(function (query, callback) {
-            if (!query) {
-                document.getElementById('suggestions-dropdown').innerHTML = '';
-                document.getElementById('suggestions-dropdown').classList.remove('active');
-                return;
-            }
-            let searchQuery = query;
-            if (!/kerala/i.test(query)) {
-                searchQuery += ', Kerala, India';
-            }
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&addressdetails=1&limit=5&accept-language=en`)
-                .then((res) => res.json())
-                .then((results) => {
-                    const suggestions = results.filter((result) => {
-                        const lat = parseFloat(result.lat);
-                        const lon = parseFloat(result.lon);
-                        return isKeralaLocation(result.address, result.display_name, lat, lon);
-                    });
-                    callback(suggestions);
-                })
-                .catch((error) => {
-                    console.error('Suggestion fetch error:', error);
-                    document.getElementById('suggestions-dropdown').innerHTML = '';
-                    document.getElementById('suggestions-dropdown').classList.remove('active');
-                });
-        }, 300);
-
-        // Use current location button
-        document.querySelector('.btn-current').addEventListener('click', function () {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function (pos) {
-                        let lat = pos.coords.latitude;
-                        let lng = pos.coords.longitude;
-
-                        // Restrict to Kerala bounds
-                        if (lat < keralaBounds[0][0]) lat = keralaBounds[0][0];
-                        if (lat > keralaBounds[1][0]) lat = keralaBounds[1][0];
-                        if (lng < keralaBounds[0][1]) lng = keralaBounds[0][1];
-                        if (lng > keralaBounds[1][1]) lng = keralaBounds[1][1];
-
-                        // If outside Kerala bounds, revert to default
-                        if (!isKeralaLocation(null, null, lat, lng)) {
-                            lat = defaultLocation.lat;
-                            lng = defaultLocation.lng;
-                            document.querySelector('.address').textContent = 'Location outside Kerala, reverting to Kozhikode';
-                            window.latestKeralaAddress = null;
-                        }
-
-                        map.setView([lat, lng], 15);
-                        marker.setLatLng([lat, lng]);
-
-                        // Reverse geocode to get address
-                        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&accept-language=en`)
-                            .then((res) => res.json())
-                            .then((data) => {
-                                const addr = formatShortAddress(data.address, data.display_name, lat, lng);
-                                document.querySelector('.address').textContent = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
-                                const searchInput = document.querySelector('.location-search input');
-                                if (searchInput) {
-                                    searchInput.value = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
-                                }
-                                window.latestKeralaAddress = isKeralaLocation(data.address, data.display_name, lat, lng) ? data.address : null;
-                                console.log('Geolocation Address:', data.address, 'Display Name:', data.display_name, 'Is Kerala:', window.latestKeralaAddress !== null);
-                            })
-                            .catch((error) => {
-                                console.error('Geocoding error:', error);
-                                document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
-                                const searchInput = document.querySelector('.location-search input');
-                                if (searchInput) {
-                                    searchInput.value = 'Kozhikode, Kerala, India';
-                                }
-                                window.latestKeralaAddress = null;
-                            });
-                    },
-                    function (error) {
-                        console.error('Geolocation error:', error);
-                        alert('Unable to retrieve your location. Defaulting to Kozhikode.');
-                        map.setView([defaultLocation.lat, defaultLocation.lng], 13);
-                        marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
-                        document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
-                        window.latestKeralaAddress = null;
-                    }
-                );
-            } else {
-                alert('Geolocation is not supported by your browser. Defaulting to Kozhikode.');
-                map.setView([defaultLocation.lat, defaultLocation.lng], 13);
-                marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
-                document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
-                window.latestKeralaAddress = null;
-            }
-        });
-
-        // Initialize map and other functionality on DOMContentLoaded
+        // Initialize
         window.addEventListener('DOMContentLoaded', () => {
             initMap();
+            populateTopSchools();
 
-            // Set initial address for default location
+            // Set initial address
             fetch('https://nominatim.openstreetmap.org/reverse?lat=11.2588&lon=75.7804&format=json&addressdetails=1&accept-language=en')
                 .then((res) => res.json())
                 .then((data) => {
-                    const addr = formatShortAddress(data.address, data.display_name, 11.2588, 75.7804);
-                    document.querySelector('.address').textContent = addr;
-                    window.latestKeralaAddress = isKeralaLocation(data.address, data.display_name, 11.2588, 75.7804) ? data.address : null;
-                    console.log('Initial Address:', data.address, 'Display Name:', data.display_name, 'Is Kerala:', window.latestKeralaAddress !== null);
-                })
-                .catch((error) => {
-                    console.error('Initial geocoding error:', error);
-                    document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
-                    window.latestKeralaAddress = null;
+                    document.querySelector('.address').textContent = formatShortAddress(data.address, data.display_name, 11.2588, 75.7804);
                 });
-
-            // Profile menu toggle
-            const userProfile = document.querySelector('.user-profile');
-            const profileMenu = document.querySelector('.profile-menu');
-            const closeMenu = document.querySelector('.close-menu');
-            if (userProfile && profileMenu) {
-                userProfile.addEventListener('click', () => {
-                    profileMenu.classList.toggle('active');
-                });
-            }
-            if (closeMenu && profileMenu) {
-                closeMenu.addEventListener('click', () => {
-                    profileMenu.classList.remove('active');
-                });
-            }
-
-            // Scroll to location section when clicking "Search by location" button
-            const setLocationBtn = document.getElementById('set-location-btn');
-            const locationSection = document.querySelector('.location-section');
-            if (setLocationBtn && locationSection) {
-                setLocationBtn.addEventListener('click', function () {
-                    locationSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                });
-            }
-
-            // More button for showing/hiding additional schools
-            const moreBtn = document.getElementById('more-schools-btn');
-            const dropdown = document.getElementById('dropdown-schools');
-            if (moreBtn && dropdown) {
-                let expanded = false;
-                moreBtn.addEventListener('click', function () {
-                    expanded = !expanded;
-                    dropdown.classList.toggle('active', expanded);
-                    moreBtn.innerHTML = expanded ? 'Less <i class="fas fa-chevron-up"></i>' : 'More <i class="fas fa-chevron-down"></i>';
-                });
-            }
-
-            // Address search functionality with suggestions
-            const searchInput = document.querySelector('.location-search input');
-            const suggestionsDropdown = document.getElementById('suggestions-dropdown');
-
-            searchInput.addEventListener('input', function () {
-                const query = searchInput.value.trim();
-                fetchSuggestions(query, (suggestions) => {
-                    suggestionsDropdown.innerHTML = '';
-                    if (suggestions.length > 0) {
-                        suggestions.forEach((suggestion) => {
-                            const suggestionItem = document.createElement('div');
-                            suggestionItem.className = 'suggestion-item';
-                            suggestionItem.textContent = formatShortAddress(suggestion.address, suggestion.display_name, parseFloat(suggestion.lat), parseFloat(suggestion.lon));
-                            suggestionItem.addEventListener('click', () => {
-                                const lat = parseFloat(suggestion.lat);
-                                const lon = parseFloat(suggestion.lon);
-                                map.setView([lat, lon], 15);
-                                marker.setLatLng([lat, lon]);
-                                const addr = formatShortAddress(suggestion.address, suggestion.display_name, lat, lon);
-                                document.querySelector('.address').textContent = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
-                                searchInput.value = addr;
-                                window.latestKeralaAddress = suggestion.address;
-                                suggestionsDropdown.innerHTML = '';
-                                suggestionsDropdown.classList.remove('active');
-                                console.log('Selected Address:', suggestion.address, 'Display Name:', suggestion.display_name, 'Is Kerala:', true);
-                            });
-                            suggestionsDropdown.appendChild(suggestionItem);
-                        });
-                        suggestionsDropdown.classList.add('active');
-                    } else {
-                        suggestionsDropdown.classList.remove('active');
-                    }
-                });
-            });
-
-            // Clear suggestions when clicking outside
-            document.addEventListener('click', function (e) {
-                if (!searchInput.contains(e.target) && !suggestionsDropdown.contains(e.target)) {
-                    suggestionsDropdown.innerHTML = '';
-                    suggestionsDropdown.classList.remove('active');
-                }
-            });
-
-            // Handle Enter key for search
-            searchInput.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    let query = searchInput.value.trim();
-                    if (!query) return;
-                    if (!/kerala/i.test(query)) {
-                        query += ', Kerala, India';
-                    }
-                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1&accept-language=en`)
-                        .then((res) => res.json())
-                        .then((results) => {
-                            if (results && results.length > 0) {
-                                const result = results[0];
-                                const lat = parseFloat(result.lat);
-                                const lon = parseFloat(result.lon);
-                                if (isKeralaLocation(result.address, result.display_name, lat, lon)) {
-                                    map.setView([lat, lon], 15);
-                                    marker.setLatLng([lat, lon]);
-                                    const addr = formatShortAddress(result.address, result.display_name, lat, lon);
-                                    document.querySelector('.address').textContent = addr && addr.trim() !== '' ? addr : 'Kozhikode, Kerala, India';
-                                    searchInput.value = addr;
-                                    window.latestKeralaAddress = result.address;
-                                    suggestionsDropdown.innerHTML = '';
-                                    suggestionsDropdown.classList.remove('active');
-                                    console.log('Search Address:', result.address, 'Display Name:', result.display_name, 'Is Kerala:', true);
-                                } else {
-                                    document.querySelector('.address').textContent = 'Location not in Kerala, reverting to Kozhikode';
-                                    map.setView([defaultLocation.lat, defaultLocation.lng], 13);
-                                    marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
-                                    window.latestKeralaAddress = null;
-                                    suggestionsDropdown.innerHTML = '';
-                                    suggestionsDropdown.classList.remove('active');
-                                    console.log('Search Address:', result.address, 'Display Name:', result.display_name, 'Is Kerala:', false);
-                                }
-                            } else {
-                                document.querySelector('.address').textContent = 'Location not found, reverting to Kozhikode';
-                                map.setView([defaultLocation.lat, defaultLocation.lng], 13);
-                                marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
-                                window.latestKeralaAddress = null;
-                                suggestionsDropdown.innerHTML = '';
-                                suggestionsDropdown.classList.remove('active');
-                            }
-                        })
-                        .catch((error) => {
-                            console.error('Search error:', error);
-                            document.querySelector('.address').textContent = 'Location not found, reverting to Kozhikode';
-                            map.setView([defaultLocation.lat, defaultLocation.lng], 13);
-                            marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
-                            window.latestKeralaAddress = null;
-                            suggestionsDropdown.innerHTML = '';
-                            suggestionsDropdown.classList.remove('active');
-                        });
-                }
-            });
-
-            // Confirm Location button
-            const confirmBtn = document.querySelector('.btn-confirm');
-            if (confirmBtn) {
-                confirmBtn.addEventListener('click', function () {
-                    const currentLatLng = marker.getLatLng();
-                    if (window.latestKeralaAddress && isKeralaLocation(window.latestKeralaAddress, document.querySelector('.address').textContent, currentLatLng.lat, currentLatLng.lng)) {
-                        console.log('Confirming location in Kerala:', window.latestKeralaAddress);
-                        window.location.href = 'nearby_driving_school.html';
-                    } else {
-                        document.querySelector('.address').textContent = 'Please select a location within Kerala to continue.';
-                        map.setView([defaultLocation.lat, defaultLocation.lng], 13);
-                        marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
-                        window.latestKeralaAddress = null;
-                        console.log('Location not in Kerala or not set:', window.latestKeralaAddress);
-                    }
-                });
-            }
         });
     </script>
 </body>
 </html>
-```
