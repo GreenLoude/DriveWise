@@ -272,96 +272,198 @@
             justify-content: center;
         }
 
-        .vehicle-option {
-            flex: 1;
-            padding: 15px;
-            background-color: var(--light);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+        /* Blob Button Animation CSS */
+        .blob-btn {
+            z-index: 1;
+            position: relative;
+            padding: 20px 46px;
+            margin-bottom: 30px;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .vehicle-option:hover, .vehicle-option.active {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .vehicle-option i {
-            margin-right: 5px;
-        }
-
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin-bottom: 20px;
-        }
-
-        .calendar-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-
-        .calendar-day {
-            padding: 10px;
-            text-align: center;
-            background-color: var(--light);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .calendar-day:hover, .calendar-day.active {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .calendar-day.empty {
+            text-transform: uppercase;
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: bold;
             background-color: transparent;
-            cursor: default;
-        }
-
-        .time-slots {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .time-slot {
-            padding: 10px 20px;
-            background-color: var(--light);
-            border: 1px solid var(--border);
-            border-radius: 20px;
+            outline: none;
+            border: none;
+            transition: color 0.5s;
             cursor: pointer;
-            transition: all 0.3s ease;
+            border-radius:30px;
+            min-width: 180px;
+            min-height: 80px;
+            margin-right: 20px;
+        }
+        .blob-btn:before {
+            content: "";
+            z-index: 1;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--primary);
+            border-radius:30px;
+        }
+        .blob-btn:after {
+            content: "";
+            z-index: -2;
+            position: absolute;
+            left: 3px;
+            top: 3px;
+            width: 100%;
+            height: 100%;
+            transition: all 0.3s 0.2s;
+            border-radius:30px;
+        }
+        .blob-btn:hover,
+        .blob-btn.active,
+        .blob-btn:hover {
+            color: #fff;
+            background: var(--primary);
+            border-radius: 30px;
+        }
+        }
+        .blob-btn:hover:after,
+        .blob-btn.active:after {
+            transition: all 0.3s;
+            left: 0;
+            top: 0;
+            border-radius:30px;
+        }
+        .blob-btn__inner {
+            z-index: -1;
+            overflow: hidden;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border-radius:30px;
+            background:#ffffff;
+        }
+        .blob-btn__blobs {
+            position: relative;
+            display: block;
+            height: 100%;
+            filter: url('#goo');
+        }
+        .blob-btn__blob {
+            position: absolute;
+            top: 2px;
+            width: 25%;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 100%;
+            transform: translate3d(0,150%,0) scale(1.4);
+            transition: transform 0.45s;
+        }
+        .blob-btn__blob:nth-child(1) { left: 0%; transition-delay: 0s; }
+        .blob-btn__blob:nth-child(2) { left: 30%; transition-delay: 0.08s; }
+        .blob-btn__blob:nth-child(3) { left: 60%; transition-delay: 0.16s; }
+        .blob-btn__blob:nth-child(4) { left: 90%; transition-delay: 0.24s; }
+        .blob-btn:hover .blob-btn__blob,
+        .blob-btn.active .blob-btn__blob {
+            transform: translateZ(0) scale(1.4);
+        }
+        /* End Blob Button Animation CSS */
+        .icon-anim {
+            display: inline-block;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: none;
         }
 
-        .time-slot:hover, .time-slot.active {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
+        .icon-label {
+            margin-left: 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .icon-anim.both i:last-child {
+            margin-left: 10px;
+        }
+
+        .vehicle-option:hover .icon-anim {
+            animation: move-out-right 1s linear forwards;
+        }
+
+        @keyframes move-out-right {
+            0% { left: 20px; opacity: 1; }
+            80% { left: 120px; opacity: 1; }
+            100% { left: 260px; opacity: 0; }
         }
 
         .confirm-btn {
-            display: block;
-            width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 220px;
             margin: 30px auto 10px;
-            padding: 15px;
+            padding: 15px 20px;
             font-size: 1.1rem;
-            background: var(--primary);
-            color: white;
-            border: none;
+            background: #fff;
+            color: #2563eb;
+            border: 2px solid #2563eb;
             border-radius: 50px;
             cursor: pointer;
             box-shadow: var(--shadow);
-            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            font-weight: bold;
+            outline: none;
+            text-align: center;
+            transition: all 0.25s ease;
+            position: relative;
+            white-space: nowrap;
+            line-height: 1.2;
+            overflow: hidden;
+        }
+        .confirm-btn:hover {
+            color: #fff;
+            background: #2563eb;
+        }
+        .confirm-btn:active {
+            letter-spacing: 2px;
+        }
+        .confirm-btn.onclic {
+            width: 50px !important;
+            height: 50px !important;
+            min-width: 50px !important;
+            min-height: 50px !important;
+            max-width: 50px !important;
+            max-height: 50px !important;
+            border-radius: 50% !important;
+            border-color: #bbbbbb;
+            border-width: 3px;
+            font-size: 0;
+            border-left-color: #2563eb;
+            animation: rotating 2s 0.25s linear infinite;
+            color: #2563eb;
+            background: #fff;
+            padding: 0 !important;
+        }
+        .confirm-btn.onclic:after {
+            content: "";
+        }
+        .confirm-btn.onclic:hover {
+            color: #2563eb;
+            background: #fff;
+        }
+        .confirm-btn.validate {
+            font-size: 13px !important;
+            color: #fff !important;
+            background: #2563eb !important;
+        }
+        .confirm-btn.validate:after {
+            font-family: 'FontAwesome';
+            content: "\f00c";
+            margin-left: 8px;
+            font-size: 16px;
+        }
+        @keyframes rotating {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .confirm-btn:hover {
@@ -551,27 +653,50 @@
     <!-- Booking Section -->
     <div class="container">
         <div class="section-title">
-            <h2>Schedule Your Session</h2>
+            <h2>Select Vehicle Type</h2>
         </div>
 
         <div class="booking-section">
             <div class="vehicle-selection">
-                <h3>Select Vehicle Type</h3>
                 <div class="vehicle-options">
-                    <div class="vehicle-option"><i class="fas fa-motorcycle"></i> 2-Wheeler</div>
-                    <div class="vehicle-option"><i class="fas fa-car"></i> 4-Wheeler</div>
-                    <div class="vehicle-option"><i class="fas fa-car-side"></i> Both</div>
+                    <button class="blob-btn">
+                        <span class="blob-btn__inner">
+                            <span class="blob-btn__blobs">
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                            </span>
+                        </span>
+                        <span class="icon-anim"><i class="fas fa-motorcycle"></i></span>
+                        <span class="icon-label">2-Wheeler</span>
+                    </button>
+                    <button class="blob-btn">
+                        <span class="blob-btn__inner">
+                            <span class="blob-btn__blobs">
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                            </span>
+                        </span>
+                        <span class="icon-anim"><i class="fas fa-car-side"></i></span>
+                        <span class="icon-label">4-Wheeler</span>
+                    </button>
+                    <button class="blob-btn">
+                        <span class="blob-btn__inner">
+                            <span class="blob-btn__blobs">
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                            </span>
+                        </span>
+                        <span class="icon-anim both"><i class="fas fa-car-side"></i><i class="fas fa-motorcycle"></i></span>
+                        <span class="icon-label">Both</span>
+                    </button>
                 </div>
             </div>
-
-            <div class="date-time-selection">
-                <h3>Select Date</h3>
-                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-                    <label for="solo-date-picker" style="font-weight: 500; margin-right: 10px;">Choose Date:</label>
-                    <input type="date" id="solo-date-picker" min="2025-07-08" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 1rem;" />
-                </div>
-            </div>
-
             <button class="confirm-btn">Confirm Solo Booking</button>
             <p class="reschedule-note">You can reschedule up to 2 hours before</p>
         </div>
@@ -664,22 +789,19 @@
         });
 
         // Vehicle selection
-        document.querySelectorAll('.vehicle-option').forEach(option => {
+        document.querySelectorAll('.blob-btn').forEach(option => {
             option.addEventListener('click', () => {
-                document.querySelectorAll('.vehicle-option').forEach(opt => opt.classList.remove('active'));
+                document.querySelectorAll('.blob-btn').forEach(opt => opt.classList.remove('active'));
                 option.classList.add('active');
+                checkBookingReady();
             });
         });
-
-
-
 
         // Confirm button enable/disable logic
         const confirmBtn = document.querySelector('.confirm-btn');
         function checkBookingReady() {
-            const vehicleSelected = document.querySelector('.vehicle-option.active');
-            const dateSelected = document.getElementById('solo-date-picker').value !== '';
-            if (vehicleSelected && dateSelected) {
+            const vehicleSelected = document.querySelector('.blob-btn.active');
+            if (vehicleSelected) {
                 confirmBtn.disabled = false;
                 confirmBtn.style.opacity = '1';
                 confirmBtn.style.pointerEvents = 'auto';
@@ -693,18 +815,28 @@
         // Initial state
         checkBookingReady();
 
-        // Add listeners for vehicle selection and date picker
-        document.querySelectorAll('.vehicle-option').forEach(option => {
-            option.addEventListener('click', checkBookingReady);
-        });
-        document.getElementById('solo-date-picker').addEventListener('change', checkBookingReady);
-
-        // Redirect to payment_section.html on confirm
-        confirmBtn.addEventListener('click', function() {
-            if (!confirmBtn.disabled) {
-                window.location.href = 'payment_section.html';
-            }
+        // Animated loading/validation effect on confirm solo button
+        confirmBtn.addEventListener('click', function(e) {
+            if (confirmBtn.disabled) return;
+            if (confirmBtn.classList.contains('onclic') || confirmBtn.classList.contains('validate')) return;
+            confirmBtn.classList.add('onclic');
+            setTimeout(function() {
+                confirmBtn.classList.remove('onclic');
+                confirmBtn.classList.add('validate');
+                setTimeout(function() {
+                    confirmBtn.classList.remove('validate');
+                    // Redirect after animation
+                    window.location.href = 'payment_section.html';
+                }, 1250);
+            }, 2250);
         });
     </script>
+
+    <!-- Add this SVG filter at the end of the body for the gooey effect -->
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="0" height="0">
+      <defs>
+        <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter>
+      </defs>
+    </svg>
 </body>
 </html>

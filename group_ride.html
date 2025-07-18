@@ -268,29 +268,119 @@
 
         .vehicle-options {
             display: flex;
-            gap: 20px;
+            gap: 30px;
             justify-content: center;
         }
 
-        .vehicle-option {
-            flex: 1;
-            padding: 15px;
-            background-color: var(--light);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+        /* Blob Button Animation CSS */
+        .blob-btn {
+            z-index: 1;
+            position: relative;
+            padding: 20px 46px;
+            margin-bottom: 30px;
             text-align: center;
+            text-transform: uppercase;
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: bold;
+            background-color: transparent;
+            outline: none;
+            border: none;
+            transition: color 0.5s;
             cursor: pointer;
-            transition: all 0.3s ease;
+            border-radius:30px;
+            min-width: 180px;
+            min-height: 80px;
+            margin-right: 20px;
         }
-
-        .vehicle-option:hover, .vehicle-option.active {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
+        .blob-btn:before {
+            content: "";
+            z-index: 1;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--primary);
+            border-radius:30px;
         }
-
-        .vehicle-option i {
-            margin-right: 5px;
+        .blob-btn:after {
+            content: "";
+            z-index: -2;
+            position: absolute;
+            left: 3px;
+            top: 3px;
+            width: 100%;
+            height: 100%;
+            transition: all 0.3s 0.2s;
+            border-radius:30px;
+        }
+        .blob-btn:hover,
+        .blob-btn.active,
+        .blob-btn:hover {
+            color: #fff;
+            background: var(--primary);
+            border-radius: 30px;
+        }
+        }
+        .blob-btn:hover:after,
+        .blob-btn.active:after {
+            transition: all 0.3s;
+            left: 0;
+            top: 0;
+            border-radius:30px;
+        }
+        .blob-btn__inner {
+            z-index: -1;
+            overflow: hidden;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border-radius:30px;
+            background:#ffffff;
+        }
+        .blob-btn__blobs {
+            position: relative;
+            display: block;
+            height: 100%;
+            filter: url('#goo');
+        }
+        .blob-btn__blob {
+            position: absolute;
+            top: 2px;
+            width: 25%;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 100%;
+            transform: translate3d(0,150%,0) scale(1.4);
+            transition: transform 0.45s;
+        }
+        .blob-btn__blob:nth-child(1) { left: 0%; transition-delay: 0s; }
+        .blob-btn__blob:nth-child(2) { left: 30%; transition-delay: 0.08s; }
+        .blob-btn__blob:nth-child(3) { left: 60%; transition-delay: 0.16s; }
+        .blob-btn__blob:nth-child(4) { left: 90%; transition-delay: 0.24s; }
+        .blob-btn:hover .blob-btn__blob,
+        .blob-btn.active .blob-btn__blob {
+            transform: translateZ(0) scale(1.4);
+        }
+        /* End Blob Button Animation CSS */
+        .icon-anim {
+            display: inline-block;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: none;
+        }
+        .icon-label {
+            margin-left: 60px;
+            position: relative;
+            z-index: 1;
+        }
+        .icon-anim.both i:last-child {
+            margin-left: 10px;
         }
 
         .group-info {
@@ -325,59 +415,34 @@
         }
 
         .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin-bottom: 20px;
-        }
-
-        .calendar-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-
-        .calendar-day {
-            padding: 10px;
-            text-align: center;
-            background-color: var(--light);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .calendar-day:hover, .calendar-day.active {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .calendar-day.empty {
-            background-color: transparent;
-            cursor: default;
-        }
-
-        .time-slots {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            gap: 30px;
             justify-content: center;
         }
 
-        .time-slot {
-            padding: 10px 20px;
+        .vehicle-option {
+            flex: 1;
+            min-width: 180px;
+            min-height: 80px;
+            font-size: 1.3rem;
+            padding: 25px 0;
             background-color: var(--light);
-            border: 1px solid var(--border);
-            border-radius: 20px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.07);
+            transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s, background 0.3s, color 0.3s, border 0.3s;
+            will-change: transform, box-shadow;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
         }
-
-        .time-slot:hover, .time-slot.active {
+        .vehicle-option:hover, .vehicle-option.active {
             background-color: var(--primary);
             color: white;
             border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(37,99,235,0.18);
         }
 
         .spots-available {
@@ -388,24 +453,73 @@
         }
 
         .join-btn {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 200px;
             margin: 30px auto 10px;
-            padding: 15px;
+            padding: 15px 20px;
             font-size: 1.1rem;
-            background: var(--primary);
-            color: white;
-            border: none;
+            background: #fff;
+            color: #2563eb;
+            border: 2px solid #2563eb;
             border-radius: 50px;
             cursor: pointer;
             box-shadow: var(--shadow);
-            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            font-weight: bold;
+            outline: none;
+            text-align: center;
+            transition: all 0.25s ease;
+            position: relative;
+            white-space: nowrap;
+            line-height: 1.2;
         }
-
         .join-btn:hover {
-            background: var(--secondary);
-            transform: translateY(-3px);
-            box-shadow: 0 7px 15px rgba(37, 99, 235, 0.3);
+            color: #fff;
+            background: #2563eb;
+        }
+        .join-btn:active {
+            letter-spacing: 2px;
+        }
+        .join-btn.onclic {
+            width: 50px !important;
+            height: 50px !important;
+            min-width: 50px !important;
+            min-height: 50px !important;
+            max-width: 50px !important;
+            max-height: 50px !important;
+            border-radius: 50% !important;
+            border-color: #bbbbbb;
+            border-width: 3px;
+            font-size: 0;
+            border-left-color: #2563eb;
+            animation: rotating 2s 0.25s linear infinite;
+            color: #2563eb;
+            background: #fff;
+            padding: 0 !important;
+        }
+        .join-btn.onclic:after {
+            content: "";
+        }
+        .join-btn.onclic:hover {
+            color: #2563eb;
+            background: #fff;
+        }
+        .join-btn.validate {
+            font-size: 13px !important;
+            color: #fff !important;
+            background: #2563eb !important;
+        }
+        .join-btn.validate:after {
+            font-family: 'FontAwesome';
+            content: "\f00c";
+            margin-left: 8px;
+            font-size: 16px;
+        }
+        @keyframes rotating {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .notification-note {
@@ -440,21 +554,50 @@
         .footer-column h3::after {
             content: '';
             position: absolute;
-            bottom: 0;
             left: 0;
-            width: 50px;
+            bottom: 0;
+            width: 40px;
             height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+            box-shadow: none;
+            border: none;
+            margin: 0;
+            padding: 0;
+            transition: none;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .vehicle-option:hover, .vehicle-option.active {
             background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
-        .footer-links {
-            list-style: none;
+        .vehicle-option .icon-anim {
+            display: inline-block;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: none;
         }
-
-        .footer-links li {
-            margin-bottom: 12px;
+        .vehicle-option .icon-label {
+            margin-left: 60px;
+            position: relative;
+            z-index: 1;
         }
-
+        .vehicle-option .icon-anim.both i:last-child {
+                margin-left: 10px;
+        }
+        .vehicle-option:hover .icon-anim {
+            animation: move-out-right 1s linear forwards;
+        }
+        @keyframes move-out-right {
+            0% { left: 20px; opacity: 1; }
+            80% { left: 120px; opacity: 1; }
+            100% { left: 260px; opacity: 0; }
+        }
         .footer-links a {
             color: #cbd5e1;
             text-decoration: none;
@@ -594,16 +737,48 @@
     <!-- Booking Section -->
     <div class="container">
         <div class="section-title">
-            <h2>Schedule Your Group Session</h2>
+            <h2>Select Vehicle Type</h2>
         </div>
 
         <div class="booking-section">
             <div class="vehicle-selection">
-                <h3>Select Vehicle Type</h3>
                 <div class="vehicle-options">
-                    <div class="vehicle-option"><i class="fas fa-motorcycle"></i> 2-Wheeler</div>
-                    <div class="vehicle-option"><i class="fas fa-car"></i> 4-Wheeler</div>
-                    <div class="vehicle-option"><i class="fas fa-car-side"></i> Both</div>
+                    <button class="blob-btn">
+                        <span class="blob-btn__inner">
+                            <span class="blob-btn__blobs">
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                            </span>
+                        </span>
+                        <span class="icon-anim"><i class="fas fa-motorcycle"></i></span>
+                        <span class="icon-label">2-Wheeler</span>
+                    </button>
+                    <button class="blob-btn">
+                        <span class="blob-btn__inner">
+                            <span class="blob-btn__blobs">
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                            </span>
+                        </span>
+                        <span class="icon-anim"><i class="fas fa-car-side"></i></span>
+                        <span class="icon-label">4-Wheeler</span>
+                    </button>
+                    <button class="blob-btn">
+                        <span class="blob-btn__inner">
+                            <span class="blob-btn__blobs">
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                                <span class="blob-btn__blob"></span>
+                            </span>
+                        </span>
+                        <span class="icon-anim both"><i class="fas fa-car-side"></i><i class="fas fa-motorcycle"></i></span>
+                        <span class="icon-label">Both</span>
+                    </button>
                 </div>
             </div>
 
@@ -618,23 +793,8 @@
                 </div>
             </div>
 
-            <div class="date-time-selection">
-                <h3>Select Date & Time</h3>
-                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-                    <label for="group-date-picker" style="font-weight: 500; margin-right: 10px;">Choose Date:</label>
-                    <input type="date" id="group-date-picker" min="2025-07-08" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 1rem;" />
-                </div>
-                <div class="time-slots">
-                    <div class="time-slot">09:00 AM</div>
-                    <div class="time-slot">10:30 AM</div>
-                    <div class="time-slot">12:00 PM</div>
-                    <div class="time-slot">02:00 PM</div>
-                    <div class="time-slot">04:00 PM</div>
-                </div>
-                <p class="spots-available">Spots Available</p>
-            </div>
 
-            <button class="join-btn">Join Group Session</button>
+            <button class="join-btn" id="joinGroupBtn">Join Group Session</button>
             <p class="notification-note">You'll be notified when session is full</p>
         </div>
     </div>
@@ -684,13 +844,6 @@
     </footer>
 
     <script>
-        // Apply transition on page load
-        window.addEventListener('load', () => {
-            document.body.classList.add('page-transition');
-            document.body.style.opacity = '1';
-        });
-
-        // Profile menu toggle
         const profileIcon = document.querySelector('.user-profile');
         const profileMenu = document.querySelector('.profile-menu');
         const closeMenuBtn = document.querySelector('.close-menu');
@@ -726,31 +879,19 @@
         });
 
         // Vehicle selection
-        document.querySelectorAll('.vehicle-option').forEach(option => {
+        document.querySelectorAll('.blob-btn').forEach(option => {
             option.addEventListener('click', () => {
-                document.querySelectorAll('.vehicle-option').forEach(opt => opt.classList.remove('active'));
+                document.querySelectorAll('.blob-btn').forEach(opt => opt.classList.remove('active'));
                 option.classList.add('active');
-            });
-        });
-
-
-
-        // Time slot selection
-        document.querySelectorAll('.time-slot').forEach(slot => {
-            slot.addEventListener('click', () => {
-                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('active'));
-                slot.classList.add('active');
                 checkGroupBookingReady();
             });
         });
 
         // Confirm button enable/disable logic for group booking
-        const joinBtn = document.querySelector('.join-btn');
+        const joinBtn = document.getElementById('joinGroupBtn');
         function checkGroupBookingReady() {
-            const vehicleSelected = document.querySelector('.vehicle-option.active');
-            const dateSelected = document.getElementById('group-date-picker').value !== '';
-            const timeSelected = document.querySelector('.time-slot.active');
-            if (vehicleSelected && dateSelected && timeSelected) {
+            const vehicleSelected = document.querySelector('.blob-btn.active');
+            if (vehicleSelected) {
                 joinBtn.disabled = false;
                 joinBtn.style.opacity = '1';
                 joinBtn.style.pointerEvents = 'auto';
@@ -764,21 +905,28 @@
         // Initial state
         checkGroupBookingReady();
 
-        // Add listeners for vehicle, date picker, and time slot selection
-        document.querySelectorAll('.vehicle-option').forEach(option => {
-            option.addEventListener('click', checkGroupBookingReady);
-        });
-        document.getElementById('group-date-picker').addEventListener('change', checkGroupBookingReady);
-        document.querySelectorAll('.time-slot').forEach(slot => {
-            slot.addEventListener('click', checkGroupBookingReady);
-        });
-
-        // Redirect to payment_section.html on confirm group booking
-        joinBtn.addEventListener('click', function() {
-            if (!joinBtn.disabled) {
-                window.location.href = 'payment_section.html';
-            }
+        // Animated loading/validation effect on join group button
+        joinBtn.addEventListener('click', function(e) {
+            if (joinBtn.disabled) return;
+            if (joinBtn.classList.contains('onclic') || joinBtn.classList.contains('validate')) return;
+            joinBtn.classList.add('onclic');
+            setTimeout(function() {
+                joinBtn.classList.remove('onclic');
+                joinBtn.classList.add('validate');
+                setTimeout(function() {
+                    joinBtn.classList.remove('validate');
+                    // Redirect after animation
+                    window.location.href = 'payment_section.html';
+                }, 1250);
+            }, 2250);
         });
     </script>
+
+    <!-- Add this SVG filter at the end of the body for the gooey effect -->
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="0" height="0">
+      <defs>
+        <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo"/><feBlend in="SourceGraphic" in2="goo"/></filter>
+      </defs>
+    </svg>
 </body>
 </html>
