@@ -25,7 +25,7 @@
             --gray: #64748b;
             --light-gray: #e2e8f0;
             --border: #cbd5e1;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
             --radius: 12px;
         }
 
@@ -254,6 +254,13 @@
             padding: 13px 25px;
             font-weight: 500;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
         }
 
         .set-location-btn {
@@ -326,39 +333,48 @@
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 25px;
             margin-bottom: 30px;
-            background: white;
+            background: transparent;
             padding: 20px;
             border-radius: var(--radius);
-            box-shadow: var(--shadow);
         }
 
         .school-card {
-            background-color: white;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            border: 1px solid rgba(37, 99, 235, 0.2);
             border-radius: var(--radius);
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: cardFadeIn 0.5s ease-in-out;
+            backdrop-filter: blur(5px);
         }
 
         .school-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .card-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--light-gray);
+            padding: 25px;
+            border-bottom: 1px solid rgba(37, 99, 235, 0.1);
         }
 
         .card-header h3 {
-            font-size: 1.4rem;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark);
         }
 
         .rating {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .stars {
@@ -367,38 +383,40 @@
         }
 
         .rating-value {
-            font-weight: 500;
+            font-weight: 600;
+            color: var(--dark);
         }
 
         .card-details {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
         }
 
         .distance, .price {
             display: flex;
             align-items: center;
+            font-weight: 500;
         }
 
         .distance i, .price i {
-            margin-right: 5px;
+            margin-right: 8px;
             color: var(--gray);
         }
 
         .availability {
             display: inline-block;
-            padding: 5px 10px;
+            padding: 6px 12px;
             background-color: var(--accent);
             color: white;
             border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
         .card-body {
-            padding: 20px;
+            padding: 25px;
         }
 
         .next-session {
@@ -409,7 +427,7 @@
         }
 
         .next-session span {
-            font-weight: 500;
+            font-weight: 600;
             color: var(--primary);
         }
 
@@ -417,12 +435,12 @@
             display: flex;
             align-items: center;
             color: var(--primary);
-            font-weight: 500;
+            font-weight: 600;
             text-decoration: none;
         }
 
         .view-details i {
-            margin-left: 5px;
+            margin-left: 8px;
             transition: transform 0.3s ease;
         }
 
@@ -464,9 +482,8 @@
             overflow: hidden;
             transition: max-height 0.5s ease-in-out;
             margin-bottom: 0;
-            background: white;
+            background: transparent;
             border-radius: var(--radius);
-            box-shadow: var(--shadow);
         }
 
         .dropdown-schools.active {
@@ -515,6 +532,13 @@
             margin-bottom: 20px;
         }
 
+        .location-error {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: none;
+        }
+
         .location-search {
             margin-bottom: 20px;
             position: relative;
@@ -559,6 +583,13 @@
             background-color: var(--light-gray);
         }
 
+        .suggestion-loading {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-align: center;
+        }
+
         .location-buttons {
             display: flex;
             gap: 15px;
@@ -566,18 +597,21 @@
 
         .btn-location {
             flex: 1;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 15px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .btn-location i {
-            margin-right: 10px;
+            margin-right: 8px;
         }
 
         .btn-current {
@@ -585,9 +619,21 @@
             color: white;
         }
 
+        .btn-current:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 15px rgba(37, 99, 235, 0.3);
+        }
+
         .btn-confirm {
             background-color: var(--accent);
             color: white;
+        }
+
+        .btn-confirm:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 15px rgba(16, 185, 129, 0.3);
         }
 
         footer {
@@ -705,6 +751,15 @@
                 width: 100%;
                 right: -100%;
             }
+
+            .location-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-location {
+                padding: 12px 15px;
+            }
         }
     </style>
 </head>
@@ -799,6 +854,7 @@
                         <h3>Current Location</h3>
                         <div id="map"></div>
                         <div class="address">Kozhikode, Kerala, India</div>
+                        <div class="location-error" id="location-error"></div>
                         <div class="location-search">
                             <input type="text" placeholder="Search for address or location">
                             <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
@@ -833,19 +889,6 @@
                 <ul class="footer-links">
                     <li><a href="home_after_login.html">Home</a></li>
                     <li><a href="Find_Schools.html">Schools</a></li>
-                    <li><a href="#">Pricing</a></li>
-                    <li><a href="#">Instructors</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h3>Resources</h3>
-                <ul class="footer-links">
-                    <li><a href="#">Driving Tips</a></li>
-                    <li><a href="#">Road Safety</a></li>
-                    <li><a href="#">License Guide</a></li>
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Blog</a></li>
                 </ul>
             </div>
 
@@ -892,7 +935,7 @@
             }
         }
 
-        // Helper functions (consistent with Find_Schools.html)
+        // Helper functions
         function getAvailability(unavailableDays) {
             const days = unavailableDays ? unavailableDays.split(',') : [];
             const today = new Date().toLocaleString('en-US', { weekday: 'long' });
@@ -920,9 +963,8 @@
             const moreTopSchoolsGrid = document.getElementById('more-top-schools-grid');
             const moreBtn = document.getElementById('more-schools-btn');
 
-            // Mock data for consistency
+            // Mock ratings for consistency
             const mockRatings = [4.8, 4.5, 4.7, 4.6, 4.9, 4.4];
-            const mockDistances = [2.3, 3.1, 4.2, 5.0, 6.1, 7.5];
 
             // Generate school cards
             const generateSchoolCards = (schools, startIndex, limit) => {
@@ -930,7 +972,6 @@
                     const rating = mockRatings[(startIndex + index) % mockRatings.length];
                     const stars = Math.floor(rating);
                     const hasHalfStar = rating % 1 >= 0.5;
-                    const distance = mockDistances[(startIndex + index) % mockDistances.length];
                     const availability = getAvailability(school.unavailable_days);
                     const nextSession = getNextSessionTime(school.unavailable_days);
                     return `
@@ -948,7 +989,7 @@
                                 </div>
                                 <div class="card-details">
                                     <div class="distance">
-                                        <i class="fas fa-location-dot"></i> ${distance} km
+                                        <i class="fas fa-location-dot"></i> ${school.distance || 'N/A'} km
                                     </div>
                                     <div class="price">
                                         <i class="fas fa-tag"></i> ₹${school.price.toFixed(2)}/session
@@ -985,8 +1026,10 @@
 
         // Map setup
         let map, marker;
+        let locationSet = false; // Track if location has been actively set
         const keralaBounds = [[8.0, 74.8], [12.8, 77.4]];
         const defaultLocation = { lat: 11.2588, lng: 75.7804 };
+        const suggestionsCache = new Map(); // Cache for suggestion results
 
         function initMap(lat = defaultLocation.lat, lng = defaultLocation.lng) {
             map = L.map('map', {
@@ -1017,42 +1060,214 @@
                     map.setView([newLat, newLng], map.getZoom());
                 }
 
-                fetch(`https://nominatim.openstreetmap.org/reverse?lat=${newLat}&lon=${newLng}&format=json&addressdetails=1&accept-language=en`)
-                    .then((res) => res.json())
-                    .then((data) => {
-                        const addr = formatShortAddress(data.address, data.display_name, newLat, newLng);
-                        document.querySelector('.address').textContent = addr || 'Kozhikode, Kerala, India';
-                    })
-                    .catch((error) => {
-                        console.error('Drag error:', error);
-                        document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
-                    });
+                locationSet = true; // Mark location as set
+                updateAddress(newLat, newLng);
             });
+        }
+
+        function updateAddress(lat, lng) {
+            const errorElement = document.getElementById('location-error');
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&accept-language=en`)
+                .then((res) => res.json())
+                .then((data) => {
+                    const addr = formatShortAddress(data.address, data.display_name, lat, lng);
+                    document.querySelector('.address').textContent = addr || 'Kozhikode, Kerala, India';
+                })
+                .catch((error) => {
+                    console.error('Reverse geocoding error:', error);
+                    document.querySelector('.address').textContent = 'Kozhikode, Kerala, India';
+                    document.getElementById('location-error').textContent = 'Unable to fetch address. Using default location.';
+                    document.getElementById('location-error').style.display = 'block';
+                });
         }
 
         function formatShortAddress(address, displayName, lat, lng) {
             if (!address) return displayName || 'Kozhikode, Kerala, India';
             let parts = [];
-            if (address.road) parts.push(address.road);
-            if (address.suburb) parts.push(address.suburb);
             if (address.city) parts.push(address.city);
             else if (address.town) parts.push(address.town);
             else if (address.village) parts.push(address.village);
+            if (address.suburb && parts.length === 0) parts.push(address.suburb);
+            if (address.road && parts.length === 0) parts.push(address.road);
             if (address.state) parts.push(address.state);
             return parts.join(', ') || displayName || 'Kozhikode, Kerala, India';
         }
+
+        // Preload common Kerala locations
+        function preloadCommonLocations() {
+            const commonLocations = [
+                { query: 'kozhikode', lat: 11.2588, lon: 75.7804, display_name: 'Kozhikode, Kerala, India', address: { city: 'Kozhikode', state: 'Kerala', country: 'India' } },
+                { query: 'thrissur', lat: 10.5276, lon: 76.2144, display_name: 'Thrissur, Kerala, India', address: { city: 'Thrissur', state: 'Kerala', country: 'India' } },
+                { query: 'kochi', lat: 9.9312, lon: 76.2673, display_name: 'Kochi, Kerala, India', address: { city: 'Kochi', state: 'Kerala', country: 'India' } },
+                { query: 'thiruvananthapuram', lat: 8.5241, lon: 76.9366, display_name: 'Thiruvananthapuram, Kerala, India', address: { city: 'Thiruvananthapuram', state: 'Kerala', country: 'India' } },
+                { query: 'kannur', lat: 11.8745, lon: 75.3704, display_name: 'Kannur, Kerala, India', address: { city: 'Kannur', state: 'Kerala', country: 'India' } }
+            ];
+            commonLocations.forEach(loc => {
+                suggestionsCache.set(loc.query.toLowerCase().trim(), [loc]);
+            });
+        }
+
+        // Handle Use Current Location button
+        document.querySelector('.btn-current').addEventListener('click', () => {
+            const errorElement = document.getElementById('location-error');
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        let lat = position.coords.latitude;
+                        let lng = position.coords.longitude;
+
+                        // Restrict to Kerala bounds
+                        if (lat < keralaBounds[0][0]) lat = keralaBounds[0][0];
+                        if (lat > keralaBounds[1][0]) lat = keralaBounds[1][0];
+                        if (lng < keralaBounds[0][1]) lng = keralaBounds[0][1];
+                        if (lng > keralaBounds[1][1]) lng = keralaBounds[1][1];
+
+                        // Update map and marker
+                        map.setView([lat, lng], 13);
+                        marker.setLatLng([lat, lng]);
+
+                        locationSet = true; // Mark location as set
+                        updateAddress(lat, lng);
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                        errorElement.textContent = 'Unable to access your location. Please allow location access or enter manually.';
+                        errorElement.style.display = 'block';
+                        // Fallback to default location
+                        map.setView([defaultLocation.lat, defaultLocation.lng], 13);
+                        marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
+                        updateAddress(defaultLocation.lat, defaultLocation.lng);
+                    }
+                );
+            } else {
+                errorElement.textContent = 'Geolocation is not supported by your browser.';
+                errorElement.style.display = 'block';
+                // Fallback to default location
+                map.setView([defaultLocation.lat, defaultLocation.lng], 13);
+                marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
+                updateAddress(defaultLocation.lat, defaultLocation.lng);
+            }
+        });
+
+        // Handle location search autocomplete
+        const locationInput = document.querySelector('.location-search input');
+        const suggestionsDropdown = document.getElementById('suggestions-dropdown');
+        let debounceTimeout;
+
+        locationInput.addEventListener('input', () => {
+            clearTimeout(debounceTimeout);
+            const query = locationInput.value.trim();
+            suggestionsDropdown.innerHTML = '';
+            if (query.length < 3) {
+                suggestionsDropdown.classList.remove('active');
+                return;
+            }
+
+            suggestionsDropdown.innerHTML = '<div class="suggestion-loading">Searching...</div>';
+            suggestionsDropdown.classList.add('active');
+
+            debounceTimeout = setTimeout(() => {
+                fetchSuggestions(query);
+            }, 100);
+        });
+
+        locationInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                suggestionsDropdown.classList.remove('active');
+            }, 200);
+        });
+
+        function fetchSuggestions(query) {
+            const errorElement = document.getElementById('location-error');
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+
+            // Check cache with normalized query
+            const normalizedQuery = query.toLowerCase().trim();
+            if (suggestionsCache.has(normalizedQuery)) {
+                populateSuggestions(suggestionsCache.get(normalizedQuery));
+                return;
+            }
+
+            fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=5&bounded=1&viewbox=${keralaBounds[0][1]},${keralaBounds[0][0]},${keralaBounds[1][1]},${keralaBounds[1][0]}&countrycodes=in&accept-language=en`)
+                .then(res => res.json())
+                .then(data => {
+                    // Filter for relevant results
+                    const filteredData = data.filter(item => item.address && (item.address.city || item.address.town || item.address.village));
+                    suggestionsCache.set(normalizedQuery, filteredData); // Cache filtered results
+                    populateSuggestions(filteredData);
+                })
+                .catch(error => {
+                    console.error('Error fetching suggestions:', error);
+                    errorElement.textContent = 'Unable to fetch location suggestions. Please try again.';
+                    errorElement.style.display = 'block';
+                    suggestionsDropdown.classList.remove('active');
+                });
+        }
+
+        function populateSuggestions(data) {
+            suggestionsDropdown.innerHTML = '';
+            if (data.length === 0) {
+                suggestionsDropdown.innerHTML = '<div class="suggestion-loading">No results found</div>';
+                suggestionsDropdown.classList.add('active');
+                return;
+            }
+
+            data.forEach(item => {
+                const suggestion = document.createElement('div');
+                suggestion.classList.add('suggestion-item');
+                suggestion.textContent = formatShortAddress(item.address, item.display_name, item.lat, item.lon);
+                suggestion.dataset.lat = item.lat;
+                suggestion.dataset.lon = item.lon;
+                suggestion.addEventListener('click', () => {
+                    const lat = parseFloat(item.lat);
+                    const lng = parseFloat(item.lon);
+                    map.setView([lat, lng], 13);
+                    marker.setLatLng([lat, lng]);
+                    document.querySelector('.address').textContent = suggestion.textContent;
+                    suggestionsDropdown.classList.remove('active');
+                    locationInput.value = suggestion.textContent;
+                    locationSet = true; // Mark location as set
+                });
+                suggestionsDropdown.appendChild(suggestion);
+            });
+            suggestionsDropdown.classList.add('active');
+        }
+
+        // Handle Confirm Location button
+        document.querySelector('.btn-confirm').addEventListener('click', () => {
+            const errorElement = document.getElementById('location-error');
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+
+            if (!locationSet) {
+                errorElement.textContent = 'Please set your location using "Use Current Location", search, or drag the map marker.';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            const pos = marker.getLatLng();
+            const location = {
+                latitude: pos.lat,
+                longitude: pos.lng,
+                address: document.querySelector('.address').textContent
+            };
+            localStorage.setItem('confirmedLocation', JSON.stringify(location));
+            window.location.href = 'Nearby_Schools.html';
+        });
 
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
             initMap();
             populateTopSchools();
-
-            // Set initial address
-            fetch('https://nominatim.openstreetmap.org/reverse?lat=11.2588&lon=75.7804&format=json&addressdetails=1&accept-language=en')
-                .then((res) => res.json())
-                .then((data) => {
-                    document.querySelector('.address').textContent = formatShortAddress(data.address, data.display_name, 11.2588, 75.7804);
-                });
+            preloadCommonLocations(); // Preload common locations
+            updateAddress(defaultLocation.lat, defaultLocation.lng);
         });
     </script>
 </body>

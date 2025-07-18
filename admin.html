@@ -188,18 +188,18 @@
       margin-top: 10px;
       display: none;
     }
-    .toggle-top-btn {
+    .toggle-top-btn, .toggle-featured-btn {
       background-color: #2ecc71;
       padding: 8px 12px;
       font-size: 14px;
     }
-    .toggle-top-btn:hover {
+    .toggle-top-btn:hover, .toggle-featured-btn:hover {
       background-color: #27ae60;
     }
-    .toggle-top-btn.active {
+    .toggle-top-btn.active, .toggle-featured-btn.active {
       background-color: #e74c3c;
     }
-    .toggle-top-btn.active:hover {
+    .toggle-top-btn.active:hover, .toggle-featured-btn.active:hover {
       background-color: #c0392b;
     }
   </style>
@@ -232,6 +232,10 @@
         <div class="kpi-card">
           <h3>Top Schools</h3>
           <p id="total-top-schools">0</p>
+        </div>
+        <div class="kpi-card">
+          <h3>Featured Schools</h3>
+          <p id="total-featured-schools">0</p>
         </div>
       </div>
       <div class="chart-container">
@@ -279,6 +283,12 @@
             Feature as Top School
           </label>
         </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="is-featured" name="is-featured">
+            Feature in Pre-login Page
+          </label>
+        </div>
         <button type="submit">Add School</button>
         <p id="form-error" class="error-message"></p>
       </form>
@@ -293,6 +303,7 @@
             <th>Unavailable Days</th>
             <th>Admissions</th>
             <th>Top School</th>
+            <th>Featured</th>
           </tr>
         </thead>
         <tbody>
@@ -416,12 +427,18 @@
                 ${school.is_top ? 'Remove Top' : 'Set Top'}
               </button>
             </td>
+            <td>
+              <button class="toggle-featured-btn ${school.is_featured ? 'active' : ''}" data-id="${school.id}">
+                ${school.is_featured ? 'Remove Featured' : 'Set Featured'}
+              </button>
+            </td>
           </tr>
         `
         )
         .join("");
       document.getElementById('total-schools').textContent = schools.length;
       document.getElementById('total-top-schools').textContent = schools.filter(s => s.is_top).length;
+      document.getElementById('total-featured-schools').textContent = schools.filter(s => s.is_featured).length;
 
       // Add event listeners for toggle buttons
       document.querySelectorAll('.toggle-top-btn').forEach(button => {
@@ -443,6 +460,31 @@
             await populateSchoolsTable();
           } catch (error) {
             console.error('Error toggling top school:', error);
+            formError.textContent = `Error: ${error.message}`;
+            formError.style.display = 'block';
+          }
+        });
+      });
+
+      document.querySelectorAll('.toggle-featured-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+          const schoolId = button.dataset.id;
+          const isFeatured = !button.classList.contains('active');
+          try {
+            const response = await fetch(`http://localhost:3000/api/toggle-featured-school/${schoolId}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ is_featured: isFeatured }),
+            });
+            const result = await response.json();
+            if (!response.ok) {
+              throw new Error(result.error || 'Failed to update featured school status');
+            }
+            await populateSchoolsTable();
+          } catch (error) {
+            console.error('Error toggling featured school:', error);
             formError.textContent = `Error: ${error.message}`;
             formError.style.display = 'block';
           }
@@ -513,6 +555,7 @@
       const price = parseFloat(document.getElementById('school-price').value);
       const unavailableDays = document.getElementById('unavailable-days').value;
       const isTop = document.getElementById('is-top').checked;
+      const isFeatured = document.getElementById('is-featured').checked;
       const imageFile = schoolImageInput.files[0];
 
       let imageBase64 = null;
@@ -540,6 +583,7 @@
             unavailable_days: unavailableDays || 'None',
             image: imageBase64,
             is_top: isTop,
+            is_featured: isFeatured,
           }),
         });
 
@@ -554,6 +598,7 @@
         unavailableDaysInput.value = '';
         schoolImageInput.value = '';
         document.getElementById('is-top').checked = false;
+        document.getElementById('is-featured').checked = false;
         await populateSchoolsTable();
         await renderAdmissionsChart();
       } catch (error) {

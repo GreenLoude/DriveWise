@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DriveWise - Driving Courses & Lessons</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm" type="module"></script>
     <style>
         /* Base Styles */
         * {
@@ -321,12 +322,10 @@
         }
 
         .school-image {
+            width: 100%;
             height: 200px;
+            object-fit: cover;
             background: var(--light-gray);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gray);
         }
 
         .school-info {
@@ -524,6 +523,15 @@
             font-size: 0.9rem;
         }
 
+        /* Error Message */
+        .error-message {
+            color: #dc2626;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .header-content {
@@ -674,82 +682,10 @@
                 <p>Top-rated schools with certified instructors</p>
             </div>
             
-            <div class="schools-grid">
-                <div class="school-card">
-                    <div class="school-image">
-                        <i class="fas fa-school fa-3x"></i>
-                    </div>
-                    <div class="school-info">
-                        <div class="school-name">Pro Drive Academy</div>
-                        <div class="school-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span>4.8 (1.2k reviews)</span>
-                        </div>
-                        <div class="school-details">
-                            <span><i class="fas fa-map-marker-alt"></i> 2.3 km</span>
-                            <span><i class="fas fa-car"></i> Manual & Automatic</span>
-                        </div>
-                        <div class="school-price">¥2,500/session</div>
-                        <div class="school-actions">
-                            <a href="login.html" class="btn btn-primary">Book Now</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="school-card">
-                    <div class="school-image">
-                        <i class="fas fa-school fa-3x"></i>
-                    </div>
-                    <div class="school-info">
-                        <div class="school-name">Master Drivers School</div>
-                        <div class="school-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                            <span>4.5 (850 reviews)</span>
-                        </div>
-                        <div class="school-details">
-                            <span><i class="fas fa-map-marker-alt"></i> 3.1 km</span>
-                            <span><i class="fas fa-car"></i> Automatic Only</span>
-                        </div>
-                        <div class="school-price">¥2,800/session</div>
-                        <div class="school-actions">
-                            <a href="login.html" class="btn btn-primary">Book Now</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="school-card">
-                    <div class="school-image">
-                        <i class="fas fa-school fa-3x"></i>
-                    </div>
-                    <div class="school-info">
-                        <div class="school-name">Elite Driving Institute</div>
-                        <div class="school-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span>4.7 (980 reviews)</span>
-                        </div>
-                        <div class="school-details">
-                            <span><i class="fas fa-map-marker-alt"></i> 4.2 km</span>
-                            <span><i class="fas fa-car"></i> Manual & Automatic</span>
-                        </div>
-                        <div class="school-price">¥3,200/session</div>
-                        <div class="school-actions">
-                            <a href="login.html" class="btn btn-primary">Book Now</a>
-                        </div>
-                    </div>
-                </div>
+            <div class="schools-grid" id="schools-grid">
+                <!-- Dynamic school cards will be added here -->
             </div>
+            <p id="schools-error" class="error-message"></p>
         </div>
     </section>
     
@@ -880,5 +816,80 @@
             </div>
         </div>
     </footer>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
+
+        // Initialize Supabase client
+        const supabaseUrl = 'https://mjgqtckdqmclmlkrphsv.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qZ3F0Y2tkcW1jbG1sa3JwaHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1NzQxMDMsImV4cCI6MjA2ODE1MDEwM30.h7_XTLfibCl6_ZTbilR5jBXKdGqAaFRoLtLnPLEyJgQ';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Fetch featured schools
+        async function fetchFeaturedSchools() {
+            try {
+                const { data, error } = await supabase
+                    .from('schools')
+                    .select('id, name, location, price, image_url')
+                    .eq('is_featured', true)
+                    .limit(3);
+                
+                if (error) {
+                    console.error('Error fetching featured schools:', error);
+                    throw new Error(`Failed to fetch schools: ${error.message}`);
+                }
+                
+                return data || [];
+            } catch (err) {
+                console.error('Unexpected error in fetchFeaturedSchools:', err);
+                document.getElementById('schools-error').textContent = 'Unable to load schools. Please try again later.';
+                document.getElementById('schools-error').style.display = 'block';
+                return [];
+            }
+        }
+
+        // Populate schools grid
+        async function populateSchoolsGrid() {
+            const schoolsGrid = document.getElementById('schools-grid');
+            const errorMessage = document.getElementById('schools-error');
+            schoolsGrid.innerHTML = '';
+            errorMessage.style.display = 'none';
+            
+            const schools = await fetchFeaturedSchools();
+            
+            if (schools.length === 0) {
+                schoolsGrid.innerHTML = '<p>No featured schools available at this time.</p>';
+                return;
+            }
+
+            schoolsGrid.innerHTML = schools.map(school => `
+                <div class="school-card">
+                    <img src="${school.image_url || 'https://via.placeholder.com/350x200'}" class="school-image" alt="${school.name}">
+                    <div class="school-info">
+                        <div class="school-name">${school.name}</div>
+                        <div class="school-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>4.8 (1k reviews)</span>
+                        </div>
+                        <div class="school-details">
+                            <span><i class="fas fa-map-marker-alt"></i> ${school.location}</span>
+                            <span><i class="fas fa-car"></i> Manual & Automatic</span>
+                        </div>
+                        <div class="school-price">₹${school.price.toFixed(2)}/session</div>
+                        <div class="school-actions">
+                            <a href="login.html" class="btn btn-primary">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', populateSchoolsGrid);
+    </script>
 </body>
 </html>
