@@ -6,8 +6,9 @@
     <title>DriveSmart - Find Driving Schools Near You</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm" type="module"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         * {
             margin: 0;
@@ -516,15 +517,19 @@
         }
 
         #map {
-            height: 300px;
+            height: 400px;
             width: 100%;
             border-radius: 12px;
             margin-bottom: 20px;
             z-index: 1;
         }
 
-        .current-location h3 {
-            margin-bottom: 15px;
+        #map-error {
+            display: none;
+            text-align: center;
+            color: red;
+            padding: 10px;
+            font-size: 0.9rem;
         }
 
         .address {
@@ -853,10 +858,11 @@
                     <div class="current-location">
                         <h3>Current Location</h3>
                         <div id="map"></div>
-                        <div class="address">Kozhikode, Kerala, India</div>
+                        <div id="map-error"></div>
+                        <div class="address"></div>
                         <div class="location-error" id="location-error"></div>
                         <div class="location-search">
-                            <input type="text" placeholder="Search for address or location">
+                            <input type="text" placeholder="Enter city or locality (e.g., Kochi, Fort Kochi, Kottayam)">
                             <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
                         </div>
                         <div class="location-buttons">
@@ -907,415 +913,621 @@
         </div>
     </footer>
 
-    <!-- Leaflet.js -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
 
-    // Initialize Supabase client
-    const supabaseUrl = 'https://mjgqtckdqmclmlkrphsv.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qZ3F0Y2tkcW1jbG1sa3JwaHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1NzQxMDMsImV4cCI6MjA2ODE1MDEwM30.h7_XTLfibCl6_ZTbilR5jBXKdGqAaFRoLtLnPLEyJgQ';
-    const supabase = createClient(supabaseUrl, supabaseKey);
+        // Initialize Supabase client
+        const supabaseUrl = 'https://mjgqtckdqmclmlkrphsv.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qZ3F0Y2tkcW1jbG1sa3JwaHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1NzQxMDMsImV4cCI6MjA2ODE1MDEwM30.h7_XTLfibCl6_ZTbilR5jBXKdGqAaFRoLtLnPLEyJgQ';
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch top schools
-    async function fetchTopSchools() {
-        try {
-            const { data, error } = await supabase
-                .from('schools')
-                .select('*')
-                .eq('is_top', true);
-            if (error) {
-                console.error('Error fetching top schools:', error);
+        // Geoapify API key (replace with your own key from https://myprojects.geoapify.com/)
+        const GEOAPIFY_API_KEY = '26c6b2518a0647798cd9d84ded55ff66'; // Replace with your Geoapify API key
+
+        // Fetch top schools
+        async function fetchTopSchools() {
+            try {
+                const { data, error } = await supabase
+                    .from('schools')
+                    .select('*')
+                    .eq('is_top', true);
+                if (error) {
+                    console.error('Error fetching top schools:', error);
+                    return [];
+                }
+                return data || [];
+            } catch (err) {
+                console.error('Unexpected error in fetchTopSchools:', err);
                 return [];
             }
-            return data || [];
-        } catch (err) {
-            console.error('Unexpected error in fetchTopSchools:', err);
-            return [];
         }
-    }
 
-    // Helper functions
-    function getAvailability(unavailableDays) {
-        const days = unavailableDays ? unavailableDays.split(',') : [];
-        const today = new Date().toLocaleString('en-US', { weekday: 'long' });
-        return days.includes(today) ? 'Available Tomorrow' : 'Available Today';
-    }
-
-    function getNextSessionTime(unavailableDays) {
-        const days = unavailableDays ? unavailableDays.split(',') : [];
-        const today = new Date().toLocaleString('en-US', { weekday: 'long' });
-        if (days.includes(today)) {
-            return 'Tomorrow at 10 AM';
+        // Helper functions
+        function getAvailability(unavailableDays) {
+            const days = unavailableDays ? unavailableDays.split(',') : [];
+            const today = new Date().toLocaleString('en-US', { weekday: 'long' });
+            return days.includes(today) ? 'Available Tomorrow' : 'Available Today';
         }
-        const now = new Date();
-        const hours = now.getHours();
-        const nextHour = hours < 17 ? hours + 1 : 9;
-        const period = nextHour < 12 ? 'AM' : 'PM';
-        const displayHour = nextHour > 12 ? nextHour - 12 : nextHour;
-        return `Today at ${displayHour} ${period}`;
-    }
 
-    // Populate top schools
-    async function populateTopSchools() {
-        const schools = await fetchTopSchools();
-        const topSchoolsGrid = document.getElementById('top-schools-grid');
-        const moreTopSchoolsGrid = document.getElementById('more-top-schools-grid');
-        const moreBtn = document.getElementById('more-schools-btn');
-
-        // Mock ratings for consistency
-        const mockRatings = [4.8, 4.5, 4.7, 4.6, 4.9, 4.4];
-
-        // Generate school cards
-        const generateSchoolCards = (schools, startIndex, limit) => {
-            return schools.slice(startIndex, startIndex + limit).map((school, index) => {
-                const rating = mockRatings[(startIndex + index) % mockRatings.length];
-                const stars = Math.floor(rating);
-                const hasHalfStar = rating % 1 >= 0.5;
-                const availability = getAvailability(school.unavailable_days);
-                const nextSession = getNextSessionTime(school.unavailable_days);
-                return `
-                    <div class="school-card">
-                        <div class="card-header">
-                            <h3>${school.name}</h3>
-                            <p style="font-size: 0.9rem; color: var(--gray);">${school.location}</p>
-                            <div class="rating">
-                                <div class="stars">
-                                    ${'<i class="fas fa-star"></i>'.repeat(stars)}
-                                    ${hasHalfStar ? '<i class="fas fa-star-half-alt"></i>' : ''}
-                                    ${'<i class="far fa-star"></i>'.repeat(5 - stars - (hasHalfStar ? 1 : 0))}
-                                </div>
-                                <div class="rating-value">${rating}</div>
-                            </div>
-                            <div class="card-details">
-                                <div class="distance">
-                                    <i class="fas fa-location-dot"></i> ${school.distance || 'N/A'} km
-                                </div>
-                                <div class="price">
-                                    <i class="fas fa-tag"></i> ₹${school.price.toFixed(2)}/session
-                                </div>
-                            </div>
-                            <span class="availability">${availability}</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="next-session">
-                                <span>Next: ${nextSession}</span>
-                                <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        };
-
-        // Populate grids
-        topSchoolsGrid.innerHTML = schools.length > 0
-            ? generateSchoolCards(schools, 0, 3)
-            : '<p style="text-align: center; color: var(--gray); width: 100%;">No top driving schools available. Check out all schools!</p>';
-        moreTopSchoolsGrid.innerHTML = schools.length > 3 ? generateSchoolCards(schools, 3, schools.length) : '';
-        moreBtn.style.display = schools.length > 3 ? 'block' : 'none';
-    }
-
-    // Toggle dropdown
-    document.getElementById('more-schools-btn').addEventListener('click', () => {
-        const dropdown = document.getElementById('dropdown-schools');
-        const btn = document.getElementById('more-schools-btn');
-        dropdown.classList.toggle('active');
-        btn.classList.toggle('active');
-    });
-
-    // Map setup
-    let map, marker;
-    let locationSet = false; // Track if location has been actively set
-    const keralaBounds = [[8.0, 74.8], [12.8, 77.4]];
-    const defaultLocation = { lat: 11.2588, lng: 75.7804 };
-    const suggestionsCache = new Map(); // Cache for suggestion results
-
-    function initMap(lat = defaultLocation.lat, lng = defaultLocation.lng) {
-        map = L.map('map', {
-            maxBounds: keralaBounds,
-            maxBoundsViscosity: 1.0,
-            minZoom: 8,
-            maxZoom: 18
-        }).setView([lat, lng], 13);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        marker = L.marker([lat, lng], { draggable: true }).addTo(map);
-
-        marker.on('dragend', function (e) {
-            const pos = marker.getLatLng();
-            let newLat = pos.lat;
-            let newLng = pos.lng;
-
-            if (pos.lat < keralaBounds[0][0]) newLat = keralaBounds[0][0];
-            if (pos.lat > keralaBounds[1][0]) newLat = keralaBounds[1][0];
-            if (pos.lng < keralaBounds[0][1]) newLng = keralaBounds[0][1];
-            if (pos.lng > keralaBounds[1][1]) newLng = keralaBounds[1][1];
-
-            if (newLat !== pos.lat || newLng !== pos.lng) {
-                marker.setLatLng([newLat, newLng]);
-                map.setView([newLat, newLng], map.getZoom());
+        function getNextSessionTime(unavailableDays) {
+            const days = unavailableDays ? unavailableDays.split(',') : [];
+            const today = new Date().toLocaleString('en-US', { weekday: 'long' });
+            if (days.includes(today)) {
+                return 'Tomorrow at 10 AM';
             }
+            const now = new Date();
+            const hours = now.getHours();
+            const nextHour = hours < 17 ? hours + 1 : 9;
+            const period = nextHour < 12 ? 'AM' : 'PM';
+            const displayHour = nextHour > 12 ? nextHour - 12 : nextHour;
+            return `Today at ${displayHour} ${period}`;
+        }
 
-            locationSet = true; // Mark location as set
-            console.log('Marker dragged: locationSet =', locationSet, 'lat =', newLat, 'lng =', newLng);
-            updateAddress(newLat, newLng);
+        // Populate top schools
+        async function populateTopSchools() {
+            const schools = await fetchTopSchools();
+            const topSchoolsGrid = document.getElementById('top-schools-grid');
+            const moreTopSchoolsGrid = document.getElementById('more-top-schools-grid');
+            const moreBtn = document.getElementById('more-schools-btn');
+
+            const mockRatings = [4.8, 4.5, 4.7, 4.6, 4.9, 4.4];
+
+            const generateSchoolCards = (schools, startIndex, limit) => {
+                return schools.slice(startIndex, startIndex + limit).map((school, index) => {
+                    const rating = mockRatings[(startIndex + index) % mockRatings.length];
+                    const stars = Math.floor(rating);
+                    const hasHalfStar = rating % 1 >= 0.5;
+                    const availability = getAvailability(school.unavailable_days);
+                    const nextSession = getNextSessionTime(school.unavailable_days);
+                    return `
+                        <div class="school-card">
+                            <div class="card-header">
+                                <h3>${school.name}</h3>
+                                <p style="font-size: 0.9rem; color: var(--gray);">${school.location}</p>
+                                <div class="rating">
+                                    <div class="stars">
+                                        ${'<i class="fas fa-star"></i>'.repeat(stars)}
+                                        ${hasHalfStar ? '<i class="fas fa-star-half-alt"></i>' : ''}
+                                        ${'<i class="far fa-star"></i>'.repeat(5 - stars - (hasHalfStar ? 1 : 0))}
+                                    </div>
+                                    <div class="rating-value">${rating}</div>
+                                </div>
+                                <div class="card-details">
+                                    <div class="distance">
+                                        <i class="fas fa-location-dot"></i> ${school.distance || 'N/A'} km
+                                    </div>
+                                    <div class="price">
+                                        <i class="fas fa-tag"></i> ₹${school.price.toFixed(2)}/session
+                                    </div>
+                                </div>
+                                <span class="availability">${availability}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="next-session">
+                                    <span>Next: ${nextSession}</span>
+                                    <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            topSchoolsGrid.innerHTML = schools.length > 0
+                ? generateSchoolCards(schools, 0, 3)
+                : '<p style="text-align: center; color: var(--gray); width: 100%;">No top driving schools available. Check out all schools!</p>';
+            moreTopSchoolsGrid.innerHTML = schools.length > 3 ? generateSchoolCards(schools, 3, schools.length) : '';
+            moreBtn.style.display = schools.length > 3 ? 'block' : 'none';
+        }
+
+        // Toggle dropdown
+        document.getElementById('more-schools-btn').addEventListener('click', () => {
+            const dropdown = document.getElementById('dropdown-schools');
+            const btn = document.getElementById('more-schools-btn');
+            dropdown.classList.toggle('active');
+            btn.classList.toggle('active');
         });
-    }
 
-    function updateAddress(lat, lng) {
-        const errorElement = document.getElementById('location-error');
-        const addressElement = document.querySelector('.address');
-        const locationInput = document.querySelector('.location-search input');
-        errorElement.style.display = 'none';
-        errorElement.textContent = '';
+        // Map setup
+        let map, marker;
+        let locationSet = false;
+        let useGeoapify = true;
+        const keralaBounds = [[7.9, 74.7], [12.9, 77.5]]; // Slightly expanded bounds
+        const defaultLocation = { lat: 9.9312, lng: 76.2673 }; // Kochi
+        const suggestionsCache = new Map();
 
-        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&accept-language=en`)
-            .then((res) => res.json())
-            .then((data) => {
-                const addr = formatShortAddress(data.address, data.display_name, lat, lng);
-                addressElement.textContent = addr || 'Kozhikode, Kerala, India';
-                locationInput.value = addr || 'Kozhikode, Kerala, India'; // Update search bar
-                console.log('Address updated:', addr, 'lat =', lat, 'lng =', lng, 'input value =', locationInput.value);
-                // Hide suggestions dropdown after updating the address
-                const suggestionsDropdown = document.getElementById('suggestions-dropdown');
-                suggestionsDropdown.classList.remove('active');
-            })
-            .catch((error) => {
-                console.error('Reverse geocoding error:', error);
-                addressElement.textContent = 'Kozhikode, Kerala, India';
-                locationInput.value = 'Kozhikode, Kerala, India'; // Update search bar with default
-                errorElement.textContent = 'Unable to fetch address. Using default location.';
-                errorElement.style.display = 'block';
-                console.log('Fallback address set: input value =', locationInput.value);
-            });
-    }
-
-    function formatShortAddress(address, displayName, lat, lng) {
-        if (!address) return displayName || 'Kozhikode, Kerala, India';
-        let parts = [];
-        if (address.city) parts.push(address.city);
-        else if (address.town) parts.push(address.town);
-        else if (address.village) parts.push(address.village);
-        if (address.suburb && parts.length === 0) parts.push(address.suburb);
-        if (address.road && parts.length === 0) parts.push(address.road);
-        if (address.state) parts.push(address.state);
-        return parts.join(', ') || displayName || 'Kozhikode, Kerala, India';
-    }
-
-    // Preload common Kerala locations
-    function preloadCommonLocations() {
-        const commonLocations = [
-            { query: 'kozhikode', lat: 11.2588, lon: 75.7804, display_name: 'Kozhikode, Kerala, India', address: { city: 'Kozhikode', state: 'Kerala', country: 'India' } },
-            { query: 'thrissur', lat: 10.5276, lon: 76.2144, display_name: 'Thrissur, Kerala, India', address: { city: 'Thrissur', state: 'Kerala', country: 'India' } },
-            { query: 'kochi', lat: 9.9312, lon: 76.2673, display_name: 'Kochi, Kerala, India', address: { city: 'Kochi', state: 'Kerala', country: 'India' } },
-            { query: 'thiruvananthapuram', lat: 8.5241, lon: 76.9366, display_name: 'Thiruvananthapuram, Kerala, India', address: { city: 'Thiruvananthapuram', state: 'Kerala', country: 'India' } },
-            { query: 'kannur', lat: 11.8745, lon: 75.3704, display_name: 'Kannur, Kerala, India', address: { city: 'Kannur', state: 'Kerala', country: 'India' } }
-        ];
-        commonLocations.forEach(loc => {
-            suggestionsCache.set(loc.query.toLowerCase().trim(), [loc]);
-        });
-    }
-
-    // Handle Use Current Location button
-    document.querySelector('.btn-current').addEventListener('click', () => {
-        const errorElement = document.getElementById('location-error');
-        errorElement.style.display = 'none';
-        errorElement.textContent = '';
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    let lat = position.coords.latitude;
-                    let lng = position.coords.longitude;
-
-                    // Restrict to Kerala bounds
-                    if (lat < keralaBounds[0][0]) lat = keralaBounds[0][0];
-                    if (lat > keralaBounds[1][0]) lat = keralaBounds[1][0];
-                    if (lng < keralaBounds[0][1]) lng = keralaBounds[0][1];
-                    if (lng > keralaBounds[1][1]) lng = keralaBounds[1][1];
-
-                    // Update map and marker
-                    map.setView([lat, lng], 13);
-                    marker.setLatLng([lat, lng]);
-                    locationSet = true; // Mark location as set
-                    console.log('Current location set: locationSet =', locationSet, 'lat =', lat, 'lng =', lng);
-                    updateAddress(lat, lng); // updateAddress will set the input value
-                },
-                (error) => {
-                    console.error('Geolocation error:', error);
-                    errorElement.textContent = 'Unable to access your location. Please allow location access or enter manually.';
-                    errorElement.style.display = 'block';
-                    // Fallback to default location
-                    map.setView([defaultLocation.lat, defaultLocation.lng], 13);
-                    marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
-                    locationSet = false;
-                    console.log('Geolocation failed: locationSet =', locationSet);
-                    updateAddress(defaultLocation.lat, defaultLocation.lng); // updateAddress will set the input value
+        async function validateApiKey() {
+            try {
+                const response = await fetch(`https://api.geoapify.com/v1/geocode/search?text=kochi&format=json&apiKey=${GEOAPIFY_API_KEY}`);
+                if (!response.ok) {
+                    throw new Error(`Geoapify HTTP ${response.status}: ${response.statusText}`);
                 }
-            );
-        } else {
-            errorElement.textContent = 'Geolocation is not supported by your browser.';
-            errorElement.style.display = 'block';
-            // Fallback to default location
-            map.setView([defaultLocation.lat, defaultLocation.lng], 13);
-            marker.setLatLng([defaultLocation.lat, defaultLocation.lng]);
-            locationSet = false;
-            console.log('Geolocation not supported: locationSet =', locationSet);
-            updateAddress(defaultLocation.lat, defaultLocation.lng); // updateAddress will set the input value
-        }
-    });
-
-    // Handle location search autocomplete
-    const locationInput = document.querySelector('.location-search input');
-    const suggestionsDropdown = document.getElementById('suggestions-dropdown');
-    let debounceTimeout;
-
-    locationInput.addEventListener('input', () => {
-        clearTimeout(debounceTimeout);
-        const query = locationInput.value.trim();
-        suggestionsDropdown.innerHTML = '';
-        if (query.length < 3) {
-            suggestionsDropdown.classList.remove('active');
-            locationSet = false; // Reset locationSet on new input
-            console.log('Input too short: locationSet =', locationSet, 'query =', query, 'input value =', locationInput.value);
-            return;
-        }
-
-        suggestionsDropdown.innerHTML = '<div class="suggestion-loading">Searching...</div>';
-        suggestionsDropdown.classList.add('active');
-        locationSet = false; // Reset locationSet until a suggestion is selected
-        console.log('New input: locationSet =', locationSet, 'query =', query, 'input value =', locationInput.value);
-
-        debounceTimeout = setTimeout(() => {
-            fetchSuggestions(query);
-        }, 100);
-    });
-
-    locationInput.addEventListener('blur', () => {
-        // Delay closing dropdown to allow suggestion click
-        setTimeout(() => {
-            if (!suggestionsDropdown.contains(document.activeElement)) {
-                suggestionsDropdown.classList.remove('active');
-                console.log('Dropdown closed: locationSet =', locationSet, 'input value =', locationInput.value);
+                return true;
+            } catch (error) {
+                console.error('Geoapify API key validation failed:', error);
+                return false;
             }
-        }, 300);
-    });
-
-    function fetchSuggestions(query) {
-        const errorElement = document.getElementById('location-error');
-        errorElement.style.display = 'none';
-        errorElement.textContent = '';
-
-        // Check cache with normalized query
-        const normalizedQuery = query.toLowerCase().trim();
-        if (suggestionsCache.has(normalizedQuery)) {
-            console.log('Using cached suggestions for:', normalizedQuery);
-            populateSuggestions(suggestionsCache.get(normalizedQuery));
-            return;
         }
 
-        fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=5&bounded=1&viewbox=${keralaBounds[0][1]},${keralaBounds[0][0]},${keralaBounds[1][1]},${keralaBounds[1][0]}&countrycodes=in&accept-language=en`)
-            .then(res => res.json())
-            .then(data => {
-                // Filter for relevant results
-                const filteredData = data.filter(item => item.address && (item.address.city || item.address.town || item.address.village));
-                suggestionsCache.set(normalizedQuery, filteredData); // Cache filtered results
-                console.log('Fetched suggestions:', filteredData);
-                populateSuggestions(filteredData);
-            })
-            .catch(error => {
-                console.error('Error fetching suggestions:', error);
-                errorElement.textContent = 'Unable to fetch location suggestions. Please try again.';
+        function initMap(lat = defaultLocation.lat, lng = defaultLocation.lng) {
+            const mapContainer = document.getElementById('map');
+            const mapError = document.getElementById('map-error');
+
+            map = L.map('map').setView([lat, lng], 13);
+            const tileLayerUrl = useGeoapify
+                ? `https://api.geoapify.com/v1/tile/osm-carto/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`
+                : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+            const attribution = useGeoapify
+                ? 'Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> | © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+                : '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors';
+
+            L.tileLayer(tileLayerUrl, {
+                attribution: attribution,
+                minZoom: 8,
+                maxZoom: 18,
+                bounds: keralaBounds
+            }).addTo(map);
+
+            marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+
+            marker.on('dragend', function (e) {
+                const pos = e.target.getLatLng();
+                let newLat = pos.lat;
+                let newLng = pos.lng;
+
+                if (pos.lat < keralaBounds[0][0]) newLat = keralaBounds[0][0];
+                if (pos.lat > keralaBounds[1][0]) newLat = keralaBounds[1][0];
+                if (pos.lng < keralaBounds[0][1]) newLng = keralaBounds[0][1];
+                if (pos.lng > keralaBounds[1][1]) newLng = keralaBounds[1][1];
+
+                if (newLat !== pos.lat || newLng !== pos.lng) {
+                    marker.setLatLng([newLat, newLng]);
+                    map.setView([newLat, newLng], 13);
+                }
+
+                locationSet = true;
+                console.log('Marker dragged: lat =', newLat, 'lng =', newLng);
+                updateAddress(newLat, newLng);
+            });
+
+            if (!useGeoapify) {
+                mapError.textContent = 'Geoapify API unavailable. Using OpenStreetMap as fallback.';
+                mapError.style.display = 'block';
+            }
+        }
+
+        function formatAddress(result) {
+            const address = result.address || {};
+            const parts = [];
+            if (result.housenumber) parts.push(result.housenumber);
+            if (result.street) parts.push(result.street);
+            if (result.suburb) parts.push(result.suburb);
+            if (result.city) parts.push(result.city);
+            else if (result.town) parts.push(result.town);
+            else if (result.village) parts.push(result.village);
+            else if (result.district) parts.push(result.district);
+            if (result.state) parts.push(result.state);
+            return parts.join(', ') || result.formatted || 'Unknown Location';
+        }
+
+        async function updateAddress(lat, lng) {
+            const errorElement = document.getElementById('location-error');
+            const addressElement = document.querySelector('.address');
+            const locationInput = document.querySelector('.location-search input');
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+
+            if (useGeoapify) {
+                try {
+                    const response = await fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lng}&type=street&format=json&apiKey=${GEOAPIFY_API_KEY}`);
+                    if (!response.ok) throw new Error(`Geoapify HTTP ${response.status}: ${response.statusText}`);
+                    const data = await response.json();
+                    const result = data.results && data.results[0];
+                    const addr = result ? formatAddress(result) : 'Unknown Location';
+                    addressElement.textContent = addr;
+                    locationInput.value = addr;
+                    console.log('Address updated (Geoapify):', addr, 'lat =', lat, 'lng =', lng);
+                    document.getElementById('suggestions-dropdown').classList.remove('active');
+                } catch (error) {
+                    console.error('Geoapify reverse geocoding error:', error);
+                    useGeoapify = false;
+                    initMap(lat, lng);
+                }
+                return;
+            }
+
+            // Fallback to Nominatim
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=18`);
+                if (!response.ok) throw new Error(`Nominatim HTTP ${response.status}`);
+                const data = await response.json();
+                const addr = data.display_name || 'Unknown Location';
+                addressElement.textContent = addr;
+                locationInput.value = addr;
+                console.log('Address updated (Nominatim):', addr, 'lat =', lat, 'lng =', lng);
+                document.getElementById('suggestions-dropdown').classList.remove('active');
+            } catch (error) {
+                console.error('Nominatim reverse geocoding error:', error);
+                addressElement.textContent = 'Unknown Location';
+                locationInput.value = '';
+                errorElement.textContent = 'Unable to fetch address. Please select a location.';
+                errorElement.style.display = 'block';
+                console.log('Fallback address set (Nominatim)');
+            }
+        }
+
+        function preloadCommonLocations() {
+            const commonLocations = [
+                { query: 'kozhikode', lat: 11.2587531, lon: 75.7804100, formatted: 'Kozhikode, Kerala, India', address: { city: 'Kozhikode', state: 'Kerala', country: 'India' } },
+                { query: 'calicut', lat: 11.2587531, lon: 75.7804100, formatted: 'Kozhikode, Kerala, India', address: { city: 'Kozhikode', state: 'Kerala', country: 'India' } },
+                { query: 'thrissur', lat: 10.5276416, lon: 76.2144349, formatted: 'Thrissur, Kerala, India', address: { city: 'Thrissur', state: 'Kerala', country: 'India' } },
+                { query: 'kochi', lat: 9.9312328, lon: 76.2673041, formatted: 'Kochi, Kerala, India', address: { city: 'Kochi', state: 'Kerala', country: 'India' } },
+                { query: 'cochin', lat: 9.9312328, lon: 76.2673041, formatted: 'Kochi, Kerala, India', address: { city: 'Kochi', state: 'Kerala', country: 'India' } },
+                { query: 'fort kochi', lat: 9.966, lon: 76.242, formatted: 'Fort Kochi, Kochi, Kerala, India', address: { suburb: 'Fort Kochi', city: 'Kochi', state: 'Kerala', country: 'India' } },
+                { query: 'thiruvananthapuram', lat: 8.5241391, lon: 76.9366376, formatted: 'Thiruvananthapuram, Kerala, India', address: { city: 'Thiruvananthapuram', state: 'Kerala', country: 'India' } },
+                { query: 'trivandrum', lat: 8.5241391, lon: 76.9366376, formatted: 'Thiruvananthapuram, Kerala, India', address: { city: 'Thiruvananthapuram', state: 'Kerala', country: 'India' } },
+                { query: 'kannur', lat: 11.8744775, lon: 75.3703662, formatted: 'Kannur, Kerala, India', address: { city: 'Kannur', state: 'Kerala', country: 'India' } },
+                { query: 'varkala', lat: 8.7378685, lon: 76.7163369, formatted: 'Varkala, Kerala, India', address: { town: 'Varkala', state: 'Kerala', country: 'India' } },
+                { query: 'palakkad', lat: 10.7867303, lon: 76.6547932, formatted: 'Palakkad, Kerala, India', address: { city: 'Palakkad', state: 'Kerala', country: 'India' } },
+                { query: 'alappuzha', lat: 9.4980667, lon: 76.3388484, formatted: 'Alappuzha, Kerala, India', address: { city: 'Alappuzha', state: 'Kerala', country: 'India' } },
+                { query: 'alleppey', lat: 9.4980667, lon: 76.3388484, formatted: 'Alappuzha, Kerala, India', address: { city: 'Alappuzha', state: 'Kerala', country: 'India' } },
+                { query: 'kollam', lat: 8.8932118, lon: 76.6141396, formatted: 'Kollam, Kerala, India', address: { city: 'Kollam', state: 'Kerala', country: 'India' } },
+                { query: 'munnar', lat: 10.088933, lon: 77.0595248, formatted: 'Munnar, Kerala, India', address: { town: 'Munnar', state: 'Kerala', country: 'India' } },
+                { query: 'wayanad', lat: 11.685357, lon: 76.132003, formatted: 'Wayanad, Kerala, India', address: { district: 'Wayanad', state: 'Kerala', country: 'India' } },
+                { query: 'kovalam', lat: 8.4004, lon: 76.9787, formatted: 'Kovalam, Kerala, India', address: { town: 'Kovalam', state: 'Kerala', country: 'India' } },
+                { query: 'kottayam', lat: 9.5915668, lon: 76.5221531, formatted: 'Kottayam, Kerala, India', address: { city: 'Kottayam', state: 'Kerala', country: 'India' } },
+                { query: 'kumarakom', lat: 9.6176, lon: 76.4306, formatted: 'Kumarakom, Kerala, India', address: { village: 'Kumarakom', state: 'Kerala', country: 'India' } },
+                { query: 'idukki', lat: 9.9189, lon: 77.1025, formatted: 'Idukki, Kerala, India', address: { district: 'Idukki', state: 'Kerala', country: 'India' } },
+                { query: 'malappuram', lat: 11.0701, lon: 76.1046, formatted: 'Malappuram, Kerala, India', address: { city: 'Malappuram', state: 'Kerala', country: 'India' } },
+                { query: 'kasaragod', lat: 12.5102, lon: 74.9852, formatted: 'Kasaragod, Kerala, India', address: { city: 'Kasaragod', state: 'Kerala', country: 'India' } },
+                { query: 'ernakulam', lat: 9.9816, lon: 76.2999, formatted: 'Ernakulam, Kerala, India', address: { district: 'Ernakulam', state: 'Kerala', country: 'India' } },
+                { query: 'pathanamthitta', lat: 9.2648, lon: 76.7870, formatted: 'Pathanamthitta, Kerala, India', address: { district: 'Pathanamthitta', state: 'Kerala', country: 'India' } },
+                { query: 'thiruvalla', lat: 9.3853, lon: 76.5750, formatted: 'Thiruvalla, Kerala, India', address: { town: 'Thiruvalla', state: 'Kerala', country: 'India' } },
+                { query: 'perinthalmanna', lat: 10.9758, lon: 76.2269, formatted: 'Perinthalmanna, Kerala, India', address: { town: 'Perinthalmanna', state: 'Kerala', country: 'India' } },
+                { query: 'edappally', lat: 10.017, lon: 76.305, formatted: 'Edappally, Kochi, Kerala, India', address: { suburb: 'Edappally', city: 'Kochi', state: 'Kerala', country: 'India' } },
+                { query: 'vyttila', lat: 9.967, lon: 76.321, formatted: 'Vyttila, Kochi, Kerala, India', address: { suburb: 'Vyttila', city: 'Kochi', state: 'Kerala', country: 'India' } },
+                { query: 'kakkanad', lat: 10.016, lon: 76.344, formatted: 'Kakkanad, Kochi, Kerala, India', address: { suburb: 'Kakkanad', city: 'Kochi', state: 'Kerala', country: 'India' } }
+            ];
+            commonLocations.forEach(loc => {
+                suggestionsCache.set(loc.query.toLowerCase().trim(), [loc]);
+            });
+            return commonLocations;
+        }
+
+        // Handle Use Current Location button
+        document.querySelector('.btn-current').addEventListener('click', () => {
+            const errorElement = document.getElementById('location-error');
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        let lat = position.coords.latitude;
+                        let lng = position.coords.longitude;
+
+                        if (lat < keralaBounds[0][0]) lat = keralaBounds[0][0];
+                        if (lat > keralaBounds[1][0]) lat = keralaBounds[1][0];
+                        if (lng < keralaBounds[0][1]) lng = keralaBounds[0][1];
+                        if (lng > keralaBounds[1][1]) lng = keralaBounds[1][1];
+
+                        map.setView([lat, lng], 14);
+                        marker.setLatLng([lat, lng]);
+                        locationSet = true;
+                        console.log('Current location set: lat =', lat, 'lng =', lng);
+                        updateAddress(lat, lng);
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                        errorElement.textContent = 'Unable to access your location. Please allow location access or search for a specific locality like Fort Kochi, Vyttila, or Kottayam.';
+                        errorElement.style.display = 'block';
+                        locationSet = false;
+                        console.log('Geolocation failed');
+                    }
+                );
+            } else {
+                errorElement.textContent = 'Geolocation is not supported by your browser. Please search for a specific locality like Fort Kochi, Vyttila, or Kottayam.';
+                errorElement.style.display = 'block';
+                locationSet = false;
+                console.log('Geolocation not supported');
+            }
+        });
+
+        // Handle location search autocomplete
+        const locationInput = document.querySelector('.location-search input');
+        const suggestionsDropdown = document.getElementById('suggestions-dropdown');
+        let debounceTimeout;
+
+        function fuzzyMatch(query, locations) {
+            const normalizedQuery = query.toLowerCase().trim();
+            const variations = {
+                'cochin': 'kochi',
+                'calicut': 'kozhikode',
+                'trivandrum': 'thiruvananthapuram',
+                'alleppey': 'alappuzha',
+                'kottaym': 'kottayam',
+                'kumarkom': 'kumarakom',
+                'iduki': 'idukki',
+                'fortcochin': 'fort kochi',
+                'edapally': 'edappally',
+                'vytila': 'vyttila'
+            };
+            const searchQuery = variations[normalizedQuery] || normalizedQuery;
+
+            function levenshtein(a, b) {
+                const matrix = Array(b.length + 1).fill().map(() => Array(a.length + 1).fill(0));
+                for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+                for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+                for (let j = 1; j <= b.length; j++) {
+                    for (let i = 1; i <= a.length; i++) {
+                        const indicator = a[i - 1] === b[j - 1] ? 0 : 1;
+                        matrix[j][i] = Math.min(
+                            matrix[j][i - 1] + 1,
+                            matrix[j - 1][i] + 1,
+                            matrix[j - 1][i - 1] + indicator
+                        );
+                    }
+                }
+                return matrix[b.length][a.length];
+            }
+
+            return locations
+                .map(loc => {
+                    const queryScore = searchQuery === loc.query.toLowerCase() ? 0 : levenshtein(searchQuery, loc.query.toLowerCase());
+                    const formattedScore = loc.formatted.toLowerCase().includes(searchQuery) ? 0 : levenshtein(searchQuery, loc.formatted.toLowerCase());
+                    return {
+                        loc,
+                        score: Math.min(queryScore, formattedScore)
+                    };
+                })
+                .filter(item => item.score <= 2 || item.loc.query.toLowerCase().includes(searchQuery))
+                .sort((a, b) => a.score - b.score || (b.loc.address.city || b.loc.address.town ? 1 : 0) - (a.loc.address.city || a.loc.address.town ? 1 : 0))
+                .map(item => item.loc)
+                .slice(0, 5);
+        }
+
+        locationInput.addEventListener('input', () => {
+            clearTimeout(debounceTimeout);
+            const query = locationInput.value.trim();
+            suggestionsDropdown.innerHTML = '';
+            if (query.length < 2) {
+                suggestionsDropdown.classList.remove('active');
+                locationSet = false;
+                console.log('Input too short: query =', query);
+                return;
+            }
+
+            suggestionsDropdown.innerHTML = '<div class="suggestion-loading">Searching...</div>';
+            suggestionsDropdown.classList.add('active');
+            locationSet = false;
+            console.log('New input: query =', query);
+
+            debounceTimeout = setTimeout(() => {
+                fetchSuggestions(query);
+            }, 300);
+        });
+
+        locationInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                if (!suggestionsDropdown.contains(document.activeElement)) {
+                    suggestionsDropdown.classList.remove('active');
+                    console.log('Dropdown closed');
+                }
+            }, 300);
+        });
+
+        async function fetchSuggestions(query) {
+            const errorElement = document.getElementById('location-error');
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+
+            const normalizedQuery = query.toLowerCase().trim();
+            const commonLocations = preloadCommonLocations();
+
+            if (suggestionsCache.has(normalizedQuery)) {
+                console.log('Using cached suggestions for:', normalizedQuery);
+                populateSuggestions(suggestionsCache.get(normalizedQuery));
+                return;
+            }
+
+            async function fetchWithRetry(url, retries = 3, delay = 1000) {
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        const res = await fetch(url);
+                        if (res.status === 429) {
+                            if (i < retries - 1) {
+                                await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+                                continue;
+                            }
+                            throw new Error('Rate limit exceeded');
+                        }
+                        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                        return await res.json();
+                    } catch (error) {
+                        if (i === retries - 1) throw error;
+                        await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+                    }
+                }
+            }
+
+            if (useGeoapify) {
+                try {
+                    const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(query)}&format=json&filter=countrycode:in&bias=rect:74.7,7.9,77.5,12.9&limit=10&apiKey=${GEOAPIFY_API_KEY}`;
+                    const data = await fetchWithRetry(url);
+                    const filteredData = data.results
+                        .filter(item => item.state === 'Kerala')
+                        .map(item => ({
+                            lat: item.lat,
+                            lon: item.lon,
+                            formatted: item.formatted,
+                            address: {
+                                city: item.city,
+                                suburb: item.suburb,
+                                town: item.town,
+                                village: item.village,
+                                district: item.county,
+                                state: item.state,
+                                country: item.country
+                            }
+                        }))
+                        .sort((a, b) => {
+                            const aPriority = a.address.city || a.address.suburb || a.address.town ? 1 : 0;
+                            const bPriority = b.address.city || b.address.suburb || b.address.town ? 1 : 0;
+                            return bPriority - aPriority;
+                        })
+                        .slice(0, 5);
+
+                    suggestionsCache.set(normalizedQuery, filteredData);
+                    console.log('Fetched suggestions (Geoapify):', filteredData);
+                    populateSuggestions(filteredData.length > 0 ? filteredData : fuzzyMatch(query, commonLocations));
+                } catch (error) {
+                    console.error('Geoapify geocoding error:', error);
+                    errorElement.textContent = error.message === 'Rate limit exceeded'
+                        ? 'Too many requests. Please try again in a moment.'
+                        : `No results found for "${query}". Try specific localities like Fort Kochi, Vyttila, or Kottayam.`;
+                    errorElement.style.display = 'block';
+                    suggestionsDropdown.classList.remove('active');
+                    locationSet = false;
+                    console.log('Fetch suggestions failed (Geoapify)');
+                    useGeoapify = false;
+                    initMap(defaultLocation.lat, defaultLocation.lng);
+                    populateSuggestions(fuzzyMatch(query, commonLocations));
+                }
+                return;
+            }
+
+            // Fallback to Nominatim
+            try {
+                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&countrycodes=IN&viewbox=74.7,12.9,77.5,7.9&bounded=1&limit=10`;
+                const data = await fetchWithRetry(url);
+                const filteredData = data
+                    .filter(item => item.address && item.address.state === 'Kerala')
+                    .map(item => ({
+                        lat: parseFloat(item.lat),
+                        lon: parseFloat(item.lon),
+                        formatted: item.display_name,
+                        address: item.address
+                    }))
+                    .sort((a, b) => {
+                        const aPriority = a.address.city || a.address.town || a.address.village ? 1 : 0;
+                        const bPriority = b.address.city || b.address.town || b.address.village ? 1 : 0;
+                        return bPriority - aPriority;
+                    })
+                    .slice(0, 5);
+
+                suggestionsCache.set(normalizedQuery, filteredData);
+                console.log('Fetched suggestions (Nominatim):', filteredData);
+                populateSuggestions(filteredData.length > 0 ? filteredData : fuzzyMatch(query, commonLocations));
+            } catch (error) {
+                console.error('Nominatim geocoding error:', error);
+                errorElement.textContent = `No results found for "${query}". Try specific localities like Fort Kochi, Vyttila, or Kottayam.`;
                 errorElement.style.display = 'block';
                 suggestionsDropdown.classList.remove('active');
                 locationSet = false;
-                console.log('Fetch suggestions failed: locationSet =', locationSet, 'input value =', locationInput.value);
-            });
-    }
+                console.log('Fetch suggestions failed (Nominatim)');
+                populateSuggestions(fuzzyMatch(query, commonLocations));
+            }
+        }
 
-    function populateSuggestions(data) {
-        suggestionsDropdown.innerHTML = '';
-        if (data.length === 0) {
-            suggestionsDropdown.innerHTML = '<div class="suggestion-loading">No results found</div>';
+        function populateSuggestions(data) {
+            suggestionsDropdown.innerHTML = '';
+            if (data.length === 0) {
+                suggestionsDropdown.innerHTML = `<div class="suggestion-loading">No results found. Try specific localities like Fort Kochi, Vyttila, or Kottayam.</div>`;
+                suggestionsDropdown.classList.add('active');
+                locationSet = false;
+                console.log('No suggestions found');
+                return;
+            }
+
+            data.forEach(item => {
+                const suggestion = document.createElement('div');
+                suggestion.classList.add('suggestion-item');
+                const addressText = formatAddress(item);
+                suggestion.textContent = addressText;
+                suggestion.dataset.lat = item.lat;
+                suggestion.dataset.lon = item.lon;
+                suggestion.addEventListener('click', () => {
+                    const lat = parseFloat(item.lat);
+                    const lng = parseFloat(item.lon);
+                    let newLat = lat;
+                    let newLng = lng;
+                    if (lat < keralaBounds[0][0]) newLat = keralaBounds[0][0];
+                    if (lat > keralaBounds[1][0]) newLat = keralaBounds[1][0];
+                    if (lng < keralaBounds[0][1]) newLng = keralaBounds[0][1];
+                    if (lng > keralaBounds[1][1]) newLng = keralaBounds[1][1];
+
+                    map.setView([newLat, newLng], 14);
+                    marker.setLatLng([newLat, newLng]);
+                    const addressElement = document.querySelector('.address');
+                    addressElement.textContent = addressText;
+                    locationInput.value = addressText;
+                    suggestionsDropdown.classList.remove('active');
+                    locationSet = true;
+                    console.log('Suggestion selected: address =', addressText, 'lat =', newLat, 'lng =', newLng);
+                });
+                suggestionsDropdown.appendChild(suggestion);
+            });
             suggestionsDropdown.classList.add('active');
-            locationSet = false; // No valid selection
-            console.log('No suggestions found: locationSet =', locationSet, 'input value =', locationInput.value);
-            return;
         }
 
-        data.forEach(item => {
-            const suggestion = document.createElement('div');
-            suggestion.classList.add('suggestion-item');
-            const addressText = formatShortAddress(item.address, item.display_name, item.lat, item.lon);
-            suggestion.textContent = addressText;
-            suggestion.dataset.lat = item.lat;
-            suggestion.dataset.lon = item.lon;
-            suggestion.addEventListener('click', () => {
-                const lat = parseFloat(item.lat);
-                const lng = parseFloat(item.lon);
-                // Restrict to Kerala bounds
-                let newLat = lat;
-                let newLng = lng;
-                if (lat < keralaBounds[0][0]) newLat = keralaBounds[0][0];
-                if (lat > keralaBounds[1][0]) newLat = keralaBounds[1][0];
-                if (lng < keralaBounds[0][1]) newLng = keralaBounds[0][1];
-                if (lng > keralaBounds[1][1]) newLng = keralaBounds[1][1];
+        // Handle Confirm Location button
+        document.querySelector('.btn-confirm').addEventListener('click', () => {
+            const errorElement = document.getElementById('location-error');
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+            const currentAddress = document.querySelector('.address').textContent;
+            const currentInput = locationInput.value.trim();
 
-                // Update map, marker, address, and input
-                map.setView([newLat, newLng], 13);
-                marker.setLatLng([newLat, newLng]);
-                const addressElement = document.querySelector('.address');
-                addressElement.textContent = addressText;
-                locationInput.value = addressText; // Update search bar
-                suggestionsDropdown.classList.remove('active');
-                locationSet = true; // Mark location as set
-                console.log('Suggestion selected: locationSet =', locationSet, 'address =', addressText, 'lat =', newLat, 'lng =', newLng, 'input value =', locationInput.value);
-            });
-            suggestionsDropdown.appendChild(suggestion);
+            console.log('Confirm clicked: currentAddress =', currentAddress, 'currentInput =', currentInput, 'marker position =', marker.getLatLng());
+
+            if (!locationSet || currentInput !== currentAddress || currentAddress === 'Unknown Location') {
+                errorElement.textContent = 'Please set your location by selecting a search suggestion, using "Use Current Location", or dragging the map marker.';
+                errorElement.style.display = 'block';
+                console.log('Confirmation failed: input mismatch =', currentInput !== currentAddress, 'currentAddress =', currentAddress);
+                return;
+            }
+
+            const pos = marker.getLatLng();
+            const location = {
+                latitude: pos.lat,
+                longitude: pos.lng,
+                address: currentAddress
+            };
+            localStorage.setItem('confirmedLocation', JSON.stringify(location));
+            console.log('Location confirmed:', location);
+            window.location.href = 'Nearby_Schools.html';
         });
-        suggestionsDropdown.classList.add('active');
-    }
 
-    // Handle Confirm Location button
-    document.querySelector('.btn-confirm').addEventListener('click', () => {
-        const errorElement = document.getElementById('location-error');
-        errorElement.style.display = 'none';
-        errorElement.textContent = '';
-        const currentAddress = document.querySelector('.address').textContent;
-        const currentInput = locationInput.value.trim();
+        // Profile menu toggle
+        document.querySelector('.user-profile').addEventListener('click', () => {
+            document.querySelector('.profile-menu').classList.toggle('active');
+        });
 
-        console.log('Confirm clicked: locationSet =', locationSet, 'currentAddress =', currentAddress, 'currentInput =', currentInput, 'marker position =', marker.getLatLng());
+        document.querySelector('.close-menu').addEventListener('click', () => {
+            document.querySelector('.profile-menu').classList.remove('active');
+        });
 
-        if (!locationSet || currentInput !== currentAddress) {
-            errorElement.textContent = 'Please set your location by selecting a search suggestion, using "Use Current Location", or dragging the map marker.';
-            errorElement.style.display = 'block';
-            console.log('Confirmation failed: locationSet =', locationSet, 'input mismatch =', currentInput !== currentAddress);
-            return;
-        }
+        // Search by location button
+        document.getElementById('set-location-btn').addEventListener('click', () => {
+            document.querySelector('.location-section').scrollIntoView({ behavior: 'smooth' });
+        });
 
-        const pos = marker.getLatLng();
-        const location = {
-            latitude: pos.lat,
-            longitude: pos.lng,
-            address: currentAddress
-        };
-        localStorage.setItem('confirmedLocation', JSON.stringify(location));
-        console.log('Location confirmed:', location);
-        window.location.href = 'Nearby_Schools.html';
-    });
+        // Initialize
+        window.addEventListener('DOMContentLoaded', async () => {
+            const isGeoapifyValid = await validateApiKey();
+            if (!isGeoapifyValid) {
+                document.getElementById('map-error').textContent = 'Invalid Geoapify API key. Using OpenStreetMap as fallback.';
+                document.getElementById('map-error').style.display = 'block';
+                useGeoapify = false;
+            }
 
-    // Initialize
-    window.addEventListener('DOMContentLoaded', () => {
-        initMap();
-        populateTopSchools();
-        preloadCommonLocations(); // Preload common locations
-        updateAddress(defaultLocation.lat, defaultLocation.lng);
-        console.log('Page loaded: locationSet =', locationSet, 'initial address =', document.querySelector('.address').textContent, 'input value =', locationInput.value);
-    });
-</script>
+            initMap();
+            populateTopSchools();
+            preloadCommonLocations();
+            document.querySelector('.address').textContent = '';
+            document.querySelector('.location-search input').value = '';
+            console.log('Page loaded: useGeoapify =', useGeoapify);
+        });
+    </script>
 </body>
 </html>
