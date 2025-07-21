@@ -257,6 +257,14 @@
           <input type="text" id="school-location" placeholder="Enter location" required>
         </div>
         <div class="form-group">
+          <label>Latitude</label>
+          <input type="number" id="school-latitude" placeholder="Enter latitude (e.g., 11.2588)" step="any" min="-90" max="90" required>
+        </div>
+        <div class="form-group">
+          <label>Longitude</label>
+          <input type="number" id="school-longitude" placeholder="Enter longitude (e.g., 75.7804)" step="any" min="-180" max="180" required>
+        </div>
+        <div class="form-group">
           <label>Price (₹)</label>
           <input type="number" id="school-price" placeholder="Enter price (e.g., 500)" min="0" step="0.01" required>
         </div>
@@ -269,7 +277,7 @@
           <div class="day-selector" id="day-selector">
             <div class="day-button" data-day="Monday">M</div>
             <div class="day-button" data-day="Tuesday">T</div>
-            <div class="day-button" data-day="Wednesday">W</div>
+      <div class="day-button" data-day="Wednesday">W</div>
             <div class="day-button" data-day="Thursday">Th</div>
             <div class="day-button" data-day="Friday">F</div>
             <div class="day-button" data-day="Saturday">Sa</div>
@@ -299,6 +307,8 @@
             <th>Image</th>
             <th>School Name</th>
             <th>Location</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
             <th>Price (₹)</th>
             <th>Unavailable Days</th>
             <th>Admissions</th>
@@ -392,7 +402,7 @@
       try {
         const { data, error } = await supabase
           .from('schools')
-          .select('*');
+          .select('id, name, location, latitude, longitude, price, unavailable_days, image_url, admissions, is_top, is_featured');
         if (error) {
           console.error('Error fetching schools:', error);
           formError.textContent = `Error fetching schools: ${error.message}`;
@@ -419,6 +429,8 @@
             <td>${school.image_url ? `<img src="${school.image_url}" class="school-image" alt="${school.name}">` : 'No Image'}</td>
             <td>${school.name}</td>
             <td>${school.location}</td>
+            <td>${school.latitude ? school.latitude.toFixed(6) : 'N/A'}</td>
+            <td>${school.longitude ? school.longitude.toFixed(6) : 'N/A'}</td>
             <td>₹${school.price.toFixed(2)}</td>
             <td>${school.unavailable_days || 'None'}</td>
             <td>${school.admissions}</td>
@@ -552,11 +564,25 @@
 
       const name = document.getElementById('school-name').value;
       const location = document.getElementById('school-location').value;
+      const latitude = parseFloat(document.getElementById('school-latitude').value);
+      const longitude = parseFloat(document.getElementById('school-longitude').value);
       const price = parseFloat(document.getElementById('school-price').value);
       const unavailableDays = document.getElementById('unavailable-days').value;
       const isTop = document.getElementById('is-top').checked;
       const isFeatured = document.getElementById('is-featured').checked;
       const imageFile = schoolImageInput.files[0];
+
+      // Validate coordinates
+      if (isNaN(latitude) || latitude < -90 || latitude > 90) {
+        formError.textContent = 'Latitude must be a number between -90 and 90';
+        formError.style.display = 'block';
+        return;
+      }
+      if (isNaN(longitude) || longitude < -180 || longitude > 180) {
+        formError.textContent = 'Longitude must be a number between -180 and 180';
+        formError.style.display = 'block';
+        return;
+      }
 
       let imageBase64 = null;
       if (imageFile) {
@@ -579,6 +605,8 @@
           body: JSON.stringify({
             name,
             location,
+            latitude,
+            longitude,
             price,
             unavailable_days: unavailableDays || 'None',
             image: imageBase64,

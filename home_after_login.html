@@ -921,8 +921,8 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qZ3F0Y2tkcW1jbG1sa3JwaHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1NzQxMDMsImV4cCI6MjA2ODE1MDEwM30.h7_XTLfibCl6_ZTbilR5jBXKdGqAaFRoLtLnPLEyJgQ';
         const supabase = createClient(supabaseUrl, supabaseKey);
 
-        // Geoapify API key (replace with your own key from https://myprojects.geoapify.com/)
-        const GEOAPIFY_API_KEY = '26c6b2518a0647798cd9d84ded55ff66'; // Replace with your Geoapify API key
+        // Geoapify API key
+        const GEOAPIFY_API_KEY = '26c6b2518a0647798cd9d84ded55ff66';
 
         // Fetch top schools
         async function fetchTopSchools() {
@@ -1032,8 +1032,8 @@
         let map, marker;
         let locationSet = false;
         let useGeoapify = true;
-        const keralaBounds = [[7.9, 74.7], [12.9, 77.5]]; // Slightly expanded bounds
-        const defaultLocation = { lat: 9.9312, lng: 76.2673 }; // Kochi
+        const keralaBounds = [[7.9, 74.7], [12.9, 77.5]];
+        const defaultLocation = { lat: 9.9312, lng: 76.2673 };
         const suggestionsCache = new Map();
 
         async function validateApiKey() {
@@ -1493,9 +1493,12 @@
                 longitude: pos.lng,
                 address: currentAddress
             };
-            localStorage.setItem('confirmedLocation', JSON.stringify(location));
-            console.log('Location confirmed:', location);
-            window.location.href = 'Nearby_Schools.html';
+            const queryParams = new URLSearchParams({
+                lat: location.latitude,
+                lng: location.longitude,
+                address: encodeURIComponent(location.address)
+            });
+            window.location.href = `Nearby_Schools.html?${queryParams.toString()}`;
         });
 
         // Profile menu toggle

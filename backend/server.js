@@ -14,7 +14,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 // Endpoint to add a new school
 app.post('/api/add-school', async (req, res) => {
   try {
-    const { name, location, price, unavailable_days, image, is_top, is_featured } = req.body;
+    const { name, location, latitude, longitude, price, unavailable_days, image, is_top, is_featured } = req.body;
 
     // Validate required fields
     if (!name || !location || !price) {
@@ -25,6 +25,12 @@ app.post('/api/add-school', async (req, res) => {
     }
     if (typeof is_featured !== 'boolean') {
       return res.status(400).json({ error: 'is_featured must be a boolean' });
+    }
+    if (typeof latitude !== 'number' || latitude < -90 || latitude > 90) {
+      return res.status(400).json({ error: 'Latitude must be a number between -90 and 90' });
+    }
+    if (typeof longitude !== 'number' || longitude < -180 || longitude > 180) {
+      return res.status(400).json({ error: 'Longitude must be a number between -180 and 180' });
     }
 
     let imageUrl = null;
@@ -55,6 +61,8 @@ app.post('/api/add-school', async (req, res) => {
         {
           name,
           location,
+          latitude, // Store latitude
+          longitude, // Store longitude
           price,
           unavailable_days: unavailable_days || 'None',
           image_url: imageUrl,
