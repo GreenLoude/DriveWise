@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveSmart - Driving School Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light-gray: #e2e8f0;
+            --border: #cbd5e1;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --radius: 12px;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .page-transition {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav li {
+            margin-left: 25px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        nav a i {
+            margin-right: 5px;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .user-profile:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease-in-out;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .profile-menu.active {
+            right: 0;
+        }
+
+        .profile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .profile-menu-header h3 {
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+
+        .close-menu {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .profile-details {
+            padding: 20px;
+        }
+
+        .profile-details p {
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .profile-details strong {
+            color: var(--dark);
+        }
+
+        .profile-actions {
+            margin-top: 20px;
+        }
+
+        .profile-actions a {
+            display: block;
+            padding: 10px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .profile-actions a:hover {
+            background-color: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .school-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: cardFadeIn 0.5s ease-in-out;
+            backdrop-filter: blur(5px);
+            margin-top: 70px;
+        }
+
+        .school-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .school-image {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .card-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+
+        .card-details p {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .card-details i {
+            margin-right: 8px;
+            color: var(--gray);
+        }
+
+        .premium-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 25px;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+        }
+
+        .premium-btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .premium-btn:active {
+            transform: translateY(0);
+        }
+
+        .premium-btn i {
+            margin-left: 8px;
+        }
+
+        .error-message {
+            text-align: center;
+            color: #e74c3c;
+            font-size: 1rem;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .vehicle-section {
+            margin-top: 20px;
+            border-top: 1px solid var(--light-gray);
+            padding-top: 20px;
+        }
+
+        .vehicle-toggle {
+            cursor: pointer;
+            padding: 10px 15px;
+            background-color: var(--light-gray);
+            border-radius: var(--radius);
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .vehicle-toggle:hover {
+            background-color: var(--border);
+        }
+
+        .vehicle-toggle i {
+            transition: transform 0.3s ease;
+        }
+
+        .vehicle-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        .vehicle-details {
+            display: none;
+            padding: 15px;
+            background-color: var(--light);
+            border-radius: var(--radius);
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .vehicle-details.active {
+            display: block;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 50px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #334155;
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header-right {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            nav ul {
+                margin-top: 15px;
+            }
+
+            .school-card {
+                margin-top: 120px;
+            }
+
+            .profile-menu {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body class="page-transition">
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-car"></i>
+                <span>DriveSmart</span>
+            </div>
+            <div class="header-right">
+                <nav>
+                    <ul>
+                        <li><a href="home_after_login.html"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="Find_Schools.html"><i class="fas fa-search-location"></i> Schools</a></li>
+                        <li><a href="#"><i class="fas fa-phone-alt"></i> Contact</a></li>
+                    </ul>
+                </nav>
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Profile Menu -->
+    <div class="profile-menu">
+        <div class="profile-menu-header">
+            <h3>User Profile</h3>
+            <button class="close-menu"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="profile-details">
+            <p><strong>Name:</strong> John Doe</p>
+            <p><strong>Email:</strong> john.doe@example.com</p>
+            <p><strong>Phone:</strong> +1 (555) 123-4567</p>
+            <p><strong>Joined:</strong> January 2025</p>
+        </div>
+        <div class="profile-actions">
+            <a href="#">Edit Profile</a>
+            <a href="#">View Bookings</a>
+            <a href="#">Settings</a>
+            <a href="#">Logout</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="section-title">
+            <h2>Driving School Details</h2>
+        </div>
+
+        <div class="error-message" id="error-message"></div>
+
+        <div class="school-card" id="school-details">
+            <p style="text-align: center; color: var(--gray); width: 100%;">Loading school details...</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>DriveSmart</h3>
+                <p>Your trusted partner in driving education. Find the best instructors and schools near you.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="home_after_login.html">Home</a></li>
+                    <li><a href="Find_Schools.html">Schools</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Drive Street, City</li>
+                    <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                    <li><i class="fas fa-envelope"></i> info@drivesmart.com</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            © 2025 DriveSmart. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Profile menu toggle
+        document.querySelector('.user-profile').addEventListener('click', () => {
+            document.querySelector('.profile-menu').classList.toggle('active');
+        });
+
+        document.querySelector('.close-menu').addEventListener('click', () => {
+            document.querySelector('.profile-menu').classList.remove('active');
+        });
+
+        // Fetch school details
+        async function fetchSchoolDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const schoolId = params.get('id');
+
+            if (!schoolId) {
+                document.getElementById('error-message').innerText = 'No school ID provided.';
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('school-details').innerHTML = '<p style="text-align: center; color: var(--gray); width: 100%;">No school selected.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/schools/${schoolId}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch school details');
+                }
+
+                const school = data.school;
+                const schoolDetails = document.getElementById('school-details');
+                schoolDetails.innerHTML = `
+                    <div class="card-body">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="md:w-1/2">
+                                <img src="${school.image_url || 'https://via.placeholder.com/400?text=No+Image+Available'}" alt="${school.name}" class="school-image w-full h-64 object-cover rounded-lg">
+                            </div>
+                            <div class="md:w-1/2">
+                                <h3 class="text-2xl font-bold mb-4">${school.name}</h3>
+                                <div class="card-details">
+                                    <p><i class="fas fa-map-marker-alt"></i> Location: ${school.location}</p>
+                                    <p><i class="fas fa-map-pin"></i> Coordinates: (${school.latitude}, ${school.longitude})</p>
+                                    <p><i class="fas fa-users"></i> Admissions: ${school.admissions}</p>
+                                    <p><i class="fas fa-star"></i> Top School: ${school.is_top ? '<span class="text-yellow-500 font-semibold">Yes</span>' : 'No'}</p>
+                                    <p><i class="fas fa-trophy"></i> Featured: ${school.is_featured ? '<span class="text-yellow-500 font-semibold">Yes</span>' : 'No'}</p>
+                                </div>
+                                <a href="/book.html?id=${school.id}" class="premium-btn mt-6">
+                                    Book Now <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Vehicle Type Sections -->
+                        <div class="vehicle-section">
+                            <div class="vehicle-toggle" data-target="two-wheeler">
+                                2-Wheeler Training <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="vehicle-details" id="two-wheeler">
+                                <p>Learn to ride motorcycles and scooters with confidence. Our 2-wheeler training program covers balance, control, and road safety, tailored for beginners and intermediates.</p>
+                                <p><strong>Price:</strong> $${school.price.toFixed(2)}</p>
+                            </div>
+                            <div class="vehicle-toggle" data-target="four-wheeler">
+                                4-Wheeler Training <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="vehicle-details" id="four-wheeler">
+                                <p>Master driving cars with our comprehensive 4-wheeler training. Includes vehicle handling, parking, and advanced road safety techniques for all skill levels.</p>
+                                <p><strong>Price:</strong> $${(school.price * 1.5).toFixed(2)}</p>
+                            </div>
+                            <div class="vehicle-toggle" data-target="both">
+                                Combined (2-Wheeler & 4-Wheeler) <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="vehicle-details" id="both">
+                                <p>Get the best of both worlds with our combined training package. Learn to ride and drive with expert instructors, covering all aspects of 2-wheeler and 4-wheeler skills.</p>
+                                <p><strong>Price:</strong> $${(school.price * 2).toFixed(2)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Add toggle functionality for vehicle sections
+                document.querySelectorAll('.vehicle-toggle').forEach(toggle => {
+                    toggle.addEventListener('click', () => {
+                        const targetId = toggle.getAttribute('data-target');
+                        const details = document.getElementById(targetId);
+                        const isActive = details.classList.contains('active');
+                        document.querySelectorAll('.vehicle-details').forEach(detail => {
+                            detail.classList.remove('active');
+                        });
+                        document.querySelectorAll('.vehicle-toggle').forEach(t => {
+                            t.classList.remove('active');
+                        });
+                        if (!isActive) {
+                            details.classList.add('active');
+                            toggle.classList.add('active');
+                        }
+                    });
+                });
+            } catch (error) {
+                document.getElementById('error-message').innerText = error.message || 'Failed to load school details. Please try again.';
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('school-details').innerHTML = '<p style="text-align: center; color: var(--gray); width: 100%;">Unable to load school details.</p>';
+            }
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchSchoolDetails();
+        });
+    </script>
+</body>
+</html>
