@@ -392,6 +392,14 @@
             transform: translateX(5px);
         }
 
+        .error-message {
+            text-align: center;
+            color: #e74c3c;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            display: none;
+        }
+
         footer {
             background-color: var(--dark);
             color: white;
@@ -564,6 +572,8 @@
             <h2>Driving Schools Near <span id="user-location">Loading...</span></h2>
         </div>
 
+        <div class="error-message" id="error-message"></div>
+
         <div class="view-toggle">
             <div class="toggle-btn active">List</div>
         </div>
@@ -616,3 +626,145 @@
         // Initialize Supabase client
         const supabaseUrl = 'https://mjgqtckdqmclmlkrphsv.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qZ3F0Y2tkcW1jbG1sa3JwaHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1NzQxMDMsImV4cCI6MjA2ODE1MDEwM30.h7_XTLfibCl6_ZTbilR5jBXKdGqAaFRoLtLnPLEyJgQ';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Helper functions (reused from home_after_login.html)
+        function getAvailability(unavailableDays) {
+            const days = unavailableDays ? unavailableDays.split(',') : [];
+            const today = new Date().toLocaleString('en-US', { weekday: 'long' });
+            return days.includes(today) ? 'Available Tomorrow' : 'Available Today';
+        }
+
+        function getNextSessionTime(unavailableDays) {
+            const days = unavailableDays ? unavailableDays.split(',') : [];
+            const today = new Date().toLocaleString('en-US', { weekday: 'long' });
+            if (days.includes(today)) {
+                return 'Tomorrow at 10 AM';
+            }
+            const now = new Date();
+            const hours = now.getHours();
+            const nextHour = hours < 17 ? hours + 1 : 9;
+            const period = nextHour < 12 ? 'AM' : 'PM';
+            const displayHour = nextHour > 12 ? nextHour - 12 : nextHour;
+            return `Today at ${displayHour} ${period}`;
+        }
+
+        // Fetch nearby schools
+        async function fetchNearbySchools(latitude, longitude) {
+            try {
+                const response = await fetch('http://localhost:3000/api/nearby-schools', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ latitude, longitude, distance: 30000 }), // 30km radius
+                });
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to fetch nearby schools');
+                }
+                return result.schools || [];
+            } catch (error) {
+                console.error('Error fetching nearby schools:', error);
+                return { error: error.message };
+            }
+        }
+
+        // Populate nearby schools
+        async function populateNearbySchools(latitude, longitude) {
+            const schoolsGrid = document.getElementById('nearby-schools-grid');
+            const errorMessage = document.getElementById('error-message');
+            const mockRatings = [4.8, 4.5, 4.7, 4.6, 4.9, 4.4];
+
+            const result = await fetchNearbySchools(latitude, longitude);
+            if (result.error) {
+                errorMessage.textContent = `Error: ${result.error}. Please try again or return to the home page to set a new location.`;
+                errorMessage.style.display = 'block';
+                schoolsGrid.innerHTML = '<p style="text-align: center; color: var(--gray); width: 100%;">No schools available due to an error.</p>';
+                return;
+            }
+
+            const schools = result;
+            if (schools.length === 0) {
+                errorMessage.textContent = 'No driving schools found within 30km of your location. Try a different location.';
+                errorMessage.style.display = 'block';
+                schoolsGrid.innerHTML = '<p style="text-align: center; color: var(--gray); width: 100%;">No schools found nearby.</p>';
+                return;
+            }
+
+            errorMessage.style.display = 'none';
+            schoolsGrid.innerHTML = schools.map((school, index) => {
+                const rating = mockRatings[index % mockRatings.length];
+                const stars = Math.floor(rating);
+                const hasHalfStar = rating % 1 >= 0.5;
+                const availability = getAvailability(school.unavailable_days);
+                const nextSession = getNextSessionTime(school.unavailable_days);
+                return `
+                    <div class="school-card">
+                        <div class="card-header">
+                            <h3>${school.name}</h3>
+                            <p style="font-size: 0.9rem; color: var(--gray);">${school.location}</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    ${'<i class="fas fa-star"></i>'.repeat(stars)}
+                                    ${hasHalfStar ? '<i class="fas fa-star-half-alt"></i>' : ''}
+                                    ${'<i class="far fa-star"></i>'.repeat(5 - stars - (hasHalfStar ? 1 : 0))}
+                                </div>
+                                <div class="rating-value">${rating}</div>
+                            </div>
+                            <div class="card-details">
+                                <div class="distance">
+                                    <i class="fas fa-location-dot"></i> ${school.distance} km
+                                </div>
+                                <div class="price">
+                                    <i class="fas fa-tag"></i> ₹${school.price.toFixed(2)}/session
+                                </div>
+                            </div>
+                            <span class="availability">${availability}</represents>
+                        </div>
+                        <div class="card-body">
+                            <div class="next-session">
+                                <span>Next: ${nextSession}</span>
+                                <a href="#" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Profile menu toggle
+        document.querySelector('.user-profile').addEventListener('click', () => {
+            document.querySelector('.profile-menu').classList.toggle('active');
+        });
+
+        document.querySelector('.close-menu').addEventListener('click', () => {
+            document.querySelector('.profile-menu').classList.remove('active');
+        });
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const latitude = parseFloat(urlParams.get('lat'));
+            const longitude = parseFloat(urlParams.get('lng'));
+            const address = decodeURIComponent(urlParams.get('address') || 'Unknown Location');
+
+            // Update user location in the section title
+            const userLocationElement = document.getElementById('user-location');
+            userLocationElement.textContent = address;
+
+            // Validate coordinates
+            if (isNaN(latitude) || isNaN(longitude) || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = 'Invalid location coordinates. Please return to the home page to set a new location.';
+                errorMessage.style.display = 'block';
+                document.getElementById('nearby-schools-grid').innerHTML = '<p style="text-align: center; color: var(--gray); width: 100%;">No schools available due to invalid location.</p>';
+                return;
+            }
+
+            // Fetch and populate nearby schools
+            populateNearbySchools(latitude, longitude);
+        });
+    </script>
+</body>
+</html>

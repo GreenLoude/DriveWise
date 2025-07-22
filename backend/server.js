@@ -61,8 +61,8 @@ app.post('/api/add-school', async (req, res) => {
         {
           name,
           location,
-          latitude, // Store latitude
-          longitude, // Store longitude
+          latitude,
+          longitude,
           price,
           unavailable_days: unavailable_days || 'None',
           image_url: imageUrl,
@@ -143,6 +143,48 @@ app.patch('/api/toggle-featured-school/:id', async (req, res) => {
     }
 
     res.status(200).json({ message: 'School updated successfully', school: data[0] });
+  } catch (err) {
+    console.error('Unexpected error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Endpoint to find nearby schools
+app.post('/api/nearby-schools', async (req, res) => {
+  try {
+    const { latitude, longitude, distance = 30000 } = req.body; // distance in meters, default 30km
+
+    // Validate inputs
+    if (typeof latitude !== 'number' || latitude < -90 || latitude > 90) {
+      return res.status(400).json({ error: 'Latitude must be a number between -90 and 90' });
+    }
+    if (typeof longitude !== 'number' || longitude < -180 || longitude > 180) {
+      return res.status(400).json({ error: 'Longitude must be a number between -180 and 180' });
+    }
+    if (typeof distance !== 'number' || distance <= 0) {
+      return res.status(400).json({ error: 'Distance must be a positive number' });
+    }
+
+    // Use raw SQL query to avoid parsing issues with PostgREST
+    const { data, error } = await supabase
+      .rpc('get_nearby_schools', {
+        user_lat: latitude,
+        user_lon: longitude,
+        max_distance: distance,
+      });
+
+    if (error) {
+      console.error('Database error:', error);
+      return res.status(500).json({ error: 'Failed to fetch nearby schools' });
+    }
+
+    // Convert distance from meters to kilometers
+    const schools = data.map(school => ({
+      ...school,
+      distance: (school.distance / 1000).toFixed(2) // Convert to km and round to 2 decimals
+    }));
+
+    res.status(200).json({ schools: schools || [] });
   } catch (err) {
     console.error('Unexpected error:', err);
     res.status(500).json({ error: 'Internal server error' });
